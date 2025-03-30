@@ -1,8 +1,8 @@
 #include "module.h"
 #include "port.h"
-#include "parameter.h"
-#include "module_item.h"
-#include "identifier.h"
+#include "initial.h"
+#include "always.h"
+#include "assign.h"
 
 #include <parse/default/symbol.h>
 #include <parse/default/instance.h>
@@ -32,7 +32,9 @@ void module_def::parse(tokenizer &tokens, void *data) {
 	tokens.expect("endmodule");
 
 	tokens.increment(false):
-	tokens.expect<module_item>();
+	tokens.expect<trigger>();
+	tokens.expect<assign>();
+	tokens.expect<declaration>();
 
 	tokens.increment(true);
 	tokens.expect(";");
@@ -67,10 +69,10 @@ void module_def::parse(tokenizer &tokens, void *data) {
 		tokens.expect(",");
 
 		tokens.increment(true):
-		tokens.expect<port>();
+		tokens.expect<declaration>();
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			ports.push_back(port(tokens, data));
+			ports.push_back(declaration(tokens, data));
 		}
 	}
 	
@@ -87,17 +89,15 @@ void module_def::parse(tokenizer &tokens, void *data) {
 	// Parse module items
 	while (tokens.decrement(__FILE__, __LINE__, data)) {
 		if (tokens.found<always>()) {
-			items.push_back(statement(always(tokens, data)));
-		} else if (tokens.found<initial>()) {
-			items.push_back(statement(initial(tokens, data)));
+			items.push_back(trigger(tokens, data));
 		} else if (tokens.found<assign>()) {
-			items.push_back(statement(assign(tokens, data)));
+			items.push_back(assign(tokens, data));
 		}
 
 		tokens.increment(false);
-		tokens.expect<always>();
-		tokens.expect<initial>();
+		tokens.expect<trigger>();
 		tokens.expect<assign>();
+		tokens.expect<declaration>();
 	}
 	
 	// Parse endmodule
@@ -121,17 +121,19 @@ void module_def::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::new_line>(true);
 		
 		// Register components
-		port::register_syntax(tokens);
-		parameter::register_syntax(tokens);
-		identifier::register_syntax(tokens);
-		module_item::register_syntax(tokens);
+		declaration::register_syntax(tokens);
+		trigger::register_syntax(tokens);
+		assign::register_syntax(tokens);
 	}
 }
 
 std::string module_def::to_string(std::string tab) const {
-	if (!valid) return tab + "invalid module";
+	string result;
+	if (!valid) {
+		return result;
+	}
 	
-	std::string result = tab + "module " + name;
+	result = "module " + name;
 	
 	// Port list
 	result += " (";
@@ -142,8 +144,8 @@ std::string module_def::to_string(std::string tab) const {
 	result += ");\n";
 	
 	// Module items
-	for (const auto& item : items) {
-		result += item->to_string(tab + "  ") + "\n";
+	for (auto item = items.begin(); item != items.end(); item++) {
+		result += item->to_string(tab + "\t") + "\n";
 	}
 	
 	result += tab + "endmodule";
@@ -151,19 +153,13 @@ std::string module_def::to_string(std::string tab) const {
 }
 
 parse::syntax *module_def::clone() const {
-	return new module(*this);
-}
-
-statement::statement(always always_stmt) {
-	this->always_stmt = always_stmt;
-}
-
-statement::statement(initial initial_stmt) {
-	this->initial_stmt = initial_stmt;
-}
-
-statement::statement(assign assign_stmt) {
-	this->assign_stmt = assign_stmt;
+	module_def *result = new module_def();
+	result->name = name;
+	result->ports = ports;
+	for (int i = 0; i < (int)items.size(); i++) {
+		result.items.push_back(items[i]->clone());
+	}
+	return result;
 }
 
 } 

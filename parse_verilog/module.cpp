@@ -1,7 +1,6 @@
 #include "module.h"
-#include "port.h"
-#include "initial.h"
-#include "always.h"
+#include "declaration.h"
+#include "trigger.h"
 #include "assign.h"
 
 #include <parse/default/symbol.h>
@@ -31,7 +30,7 @@ void module_def::parse(tokenizer &tokens, void *data) {
 	tokens.increment(true);
 	tokens.expect("endmodule");
 
-	tokens.increment(false):
+	tokens.increment(false);
 	tokens.expect<trigger>();
 	tokens.expect<assign>();
 	tokens.expect<declaration>();
@@ -68,7 +67,7 @@ void module_def::parse(tokenizer &tokens, void *data) {
 		tokens.increment(false);
 		tokens.expect(",");
 
-		tokens.increment(true):
+		tokens.increment(true);
 		tokens.expect<declaration>();
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
@@ -88,10 +87,10 @@ void module_def::parse(tokenizer &tokens, void *data) {
 	
 	// Parse module items
 	while (tokens.decrement(__FILE__, __LINE__, data)) {
-		if (tokens.found<always>()) {
-			items.push_back(trigger(tokens, data));
+		if (tokens.found<trigger>()) {
+			items.push_back(shared_ptr<parse::syntax>(new trigger(tokens, data)));
 		} else if (tokens.found<assign>()) {
-			items.push_back(assign(tokens, data));
+			items.push_back(shared_ptr<parse::syntax>(new assign(tokens, data)));
 		}
 
 		tokens.increment(false);
@@ -113,12 +112,12 @@ bool module_def::is_next(tokenizer &tokens, int i, void *data) {
 }
 
 void module_def::register_syntax(tokenizer &tokens) {
-	if (!tokens.syntax_registered<module>()) {
-		tokens.register_syntax<module>();
+	if (!tokens.syntax_registered<module_def>()) {
+		tokens.register_syntax<module_def>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();
 		tokens.register_token<parse::white_space>(false);
-		tokens.register_token<parse::new_line>(true);
+		tokens.register_token<parse::new_line>(false);
 		
 		// Register components
 		declaration::register_syntax(tokens);
@@ -133,19 +132,19 @@ std::string module_def::to_string(std::string tab) const {
 		return result;
 	}
 	
-	result = "module " + name;
-	
+	result = "module " + name + "(\n";
 	// Port list
-	result += " (";
-	for (size_t i = 0; i < ports.size(); i++) {
-		if (i > 0) result += ", ";
-		result += ports[i]->to_string("");
+	for (int i = 0; i < (int)ports.size(); i++) {
+		if (i != 0) {
+			result += ",\n";
+		}
+		result += tab + "\t" + ports[i].to_string(tab);
 	}
-	result += ");\n";
+	result += tab + (not ports.empty() ? "\n" : "") + ");\n";
 	
 	// Module items
-	for (auto item = items.begin(); item != items.end(); item++) {
-		result += item->to_string(tab + "\t") + "\n";
+	for (int i = 0; i < (int)items.size(); i++) {
+		result += tab + "\t" + items[i]->to_string(tab + "\t") + "\n";
 	}
 	
 	result += tab + "endmodule";
@@ -157,7 +156,7 @@ parse::syntax *module_def::clone() const {
 	result->name = name;
 	result->ports = ports;
 	for (int i = 0; i < (int)items.size(); i++) {
-		result.items.push_back(items[i]->clone());
+		result->items.push_back(shared_ptr<parse::syntax>(items[i]->clone()));
 	}
 	return result;
 }

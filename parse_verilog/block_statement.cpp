@@ -1,4 +1,10 @@
+#include <parse/default/symbol.h>
+#include <parse/default/white_space.h>
+#include <parse/default/new_line.h>
+
 #include "block_statement.h"
+#include "if_statement.h"
+#include "assignment_statement.h"
 
 namespace parse_verilog {
 
@@ -36,11 +42,11 @@ void block_statement::parse(tokenizer &tokens, void *data) {
 	
 	while (tokens.decrement(__FILE__, __LINE__, data)) {
 		if (tokens.found<if_statement>()) {
-			body = shared_ptr<parse::syntax>(new if_statement(tokens, data));
+			sub.push_back(shared_ptr<parse::syntax>(new if_statement(tokens, data)));
 		} else if (tokens.found<assignment_statement>()) {
-			body = shared_ptr<parse::syntax>(new assignment_statement(tokens, data));
+			sub.push_back(shared_ptr<parse::syntax>(new assignment_statement(tokens, data)));
 		} else if (tokens.found<block_statement>()) {
-			body = shared_ptr<parse::syntax>(new block_statement(tokens, data));
+			sub.push_back(shared_ptr<parse::syntax>(new block_statement(tokens, data)));
 		}
 
 		if (not one) {
@@ -64,6 +70,20 @@ bool block_statement::is_next(tokenizer &tokens, int i, void *data) {
 	return tokens.is_next("begin", i);
 }
 
+void block_statement::register_syntax(tokenizer &tokens) {
+	if (!tokens.syntax_registered<block_statement>()) {
+		tokens.register_syntax<block_statement>();
+		tokens.register_token<parse::symbol>();
+		tokens.register_token<parse::white_space>(false);
+		tokens.register_token<parse::new_line>(false);
+		
+		// Register components
+		if_statement::register_syntax(tokens);
+		assignment_statement::register_syntax(tokens);
+	}
+}
+
+
 std::string block_statement::to_string(std::string tab) const {
 	string result;
 
@@ -76,7 +96,7 @@ std::string block_statement::to_string(std::string tab) const {
 	}
 
 	for (int i = 0; i < (int)sub.size(); i++) {
-		result += tab + sub[i].to_string(tab+"\t") + "\n";
+		result += tab + sub[i]->to_string(tab+"\t") + "\n";
 	}
 
 	if (sub.size() != 1u) {
@@ -88,9 +108,9 @@ std::string block_statement::to_string(std::string tab) const {
 
 parse::syntax *block_statement::clone() const {
 	block_statement *result = new block_statement();
-	result.valid = valid;
+	result->valid = valid;
 	for (int i = 0; i < (int)sub.size(); i++) {
-		result->sub.push_back(sub[i]->clone());
+		result->sub.push_back(shared_ptr<parse::syntax>(sub[i]->clone()));
 	}
 	return result;
 }

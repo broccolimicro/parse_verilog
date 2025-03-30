@@ -1,7 +1,6 @@
 #include "declaration.h"
-#include "identifier.h"
 #include <parse/default/symbol.h>
-#include <parse/default/number.h>
+#include <parse/default/instance.h>
 
 namespace parse_verilog {
 
@@ -81,7 +80,7 @@ void declaration::parse(tokenizer &tokens, void *data) {
 		tokens.expect<parse_expression::expression>();
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			msb.parse(tokens, 0, data);
+			msb.parse(tokens, data);
 		}
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
@@ -89,7 +88,7 @@ void declaration::parse(tokenizer &tokens, void *data) {
 		}
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			lsb.parse(tokens, 0, data);
+			lsb.parse(tokens, data);
 		}
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
@@ -128,7 +127,7 @@ void declaration::parse(tokenizer &tokens, void *data) {
 		size.push_back(array<parse_expression::expression, 2>());
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			size.back()[0].parse(tokens, 0, data);
+			size.back()[0].parse(tokens, data);
 		}
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
@@ -136,7 +135,7 @@ void declaration::parse(tokenizer &tokens, void *data) {
 		}
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			size.back()[1].parse(tokens, 0, data);
+			size.back()[1].parse(tokens, data);
 		}
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {

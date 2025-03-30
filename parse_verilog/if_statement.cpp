@@ -1,6 +1,10 @@
+#include <parse/default/symbol.h>
+#include <parse/default/white_space.h>
+#include <parse/default/new_line.h>
+
 #include "if_statement.h"
 #include "block_statement.h"
-#include "statement.h"
+#include "assignment_statement.h"
 
 namespace parse_verilog {
 
@@ -28,9 +32,9 @@ void if_statement::parse(tokenizer &tokens, void *data) {
 		}
 
 		tokens.increment(true);
-		tokens.expect<block>();
 		tokens.expect<assignment_statement>();
 		tokens.expect<if_statement>();
+		tokens.expect<block_statement>();
 
 		tokens.increment(first);
 		tokens.expect("if");
@@ -67,7 +71,7 @@ void if_statement::parse(tokenizer &tokens, void *data) {
 		}
 		
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			body.push_back(body_statement());
+			body.push_back(block_statement());
 			body.back().parse(tokens, data);
 		}
 
@@ -82,6 +86,20 @@ void if_statement::parse(tokenizer &tokens, void *data) {
 
 bool if_statement::is_next(tokenizer &tokens, int i, void *data) {
 	return tokens.is_next("if", i);
+}
+
+void if_statement::register_syntax(tokenizer &tokens) {
+	if (!tokens.syntax_registered<if_statement>()) {
+		tokens.register_syntax<if_statement>();
+		tokens.register_token<parse::symbol>();
+		tokens.register_token<parse::white_space>(false);
+		tokens.register_token<parse::new_line>(false);
+		
+		// Register components
+		if_statement::register_syntax(tokens);
+		assignment_statement::register_syntax(tokens);
+		block_statement::register_syntax(tokens);
+	}
 }
 
 string if_statement::to_string(string tab) const {
@@ -104,7 +122,7 @@ string if_statement::to_string(string tab) const {
 }
 
 parse::syntax *if_statement::clone() const {
-	return if_statement(*this);
+	return new if_statement(*this);
 }
 
 } // namespace parse_verilog 

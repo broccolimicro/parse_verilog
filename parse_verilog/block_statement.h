@@ -1,6 +1,7 @@
 #pragma once
 
 #include <parse/syntax.h>
+#include <parse/tokenizer.h>
 
 #include <vector>
 #include <string>
@@ -19,6 +20,7 @@ struct block_statement : parse::syntax {
 
     void parse(tokenizer &tokens, void *data = nullptr);
     static bool is_next(tokenizer &tokens, int i = 1, void *data = nullptr);
+		static void register_syntax(tokenizer &tokens);
 
     string to_string(string tab = "") const;
     parse::syntax *clone() const;

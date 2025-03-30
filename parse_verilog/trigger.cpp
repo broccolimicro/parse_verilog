@@ -1,20 +1,20 @@
 #include "trigger.h"
-#include "statement.h"
+
 #include <parse/default/symbol.h>
 #include <parse/default/instance.h>
+
+#include "assignment_statement.h"
+#include "if_statement.h"
+#include "block_statement.h"
 
 namespace parse_verilog {
 
 trigger::trigger() {
 	debug_name = "trigger";
-	event_control = "";
-	body = nullptr;
 }
 
 trigger::trigger(tokenizer &tokens, void *data) {
 	debug_name = "trigger";
-	event_control = "";
-	body = nullptr;
 	parse(tokens, data);
 }
 
@@ -66,7 +66,8 @@ void trigger::parse(tokenizer &tokens, void *data) {
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
 			if (tokens.found("*")) {
-				condition = true;
+				tokens.next();
+				condition.valid = true;
 			} else {
 				condition.parse(tokens, data);
 			}
@@ -75,8 +76,6 @@ void trigger::parse(tokenizer &tokens, void *data) {
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
 			tokens.next(); // Consume ")"
 		}
-	} else {
-		condition = false;
 	}
 
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
@@ -96,7 +95,7 @@ void trigger::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();
 		parse_expression::expression::register_syntax(tokens);
-		block::register_syntax(tokens);
+		block_statement::register_syntax(tokens);
 		if_statement::register_syntax(tokens);
 		assignment_statement::register_syntax(tokens);
 	}
@@ -108,7 +107,7 @@ std::string trigger::to_string(std::string tab) const {
 		return result;
 	}
 
-	if (condition.is_null()) {
+	if (!condition.valid) {
 		result += "initial ";
 	} else {
 		result += "always @(" + condition.to_string(tab) + ") ";

@@ -3,6 +3,7 @@
 #include <parse/parse.h>
 #include <parse/syntax.h>
 
+#include "block_statement.h"
 #include <parse_expression/expression.h>
 
 #include <string>

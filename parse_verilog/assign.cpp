@@ -54,7 +54,7 @@ void assign::parse(tokenizer &tokens, void *data) {
 	}
 
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		expr.parse(tokens, 0, data);
+		expr.parse(tokens, data);
 	}
 
 	if (tokens.decrement(__FILE__, __LINE__, data)) {

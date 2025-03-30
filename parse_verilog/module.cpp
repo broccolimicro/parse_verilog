@@ -2,6 +2,8 @@
 #include "declaration.h"
 #include "trigger.h"
 #include "assign.h"
+#include "for_loop.h"
+#include "module_instance.h"
 
 #include <parse/default/symbol.h>
 #include <parse/default/instance.h>
@@ -34,6 +36,8 @@ void module_def::parse(tokenizer &tokens, void *data) {
 	tokens.expect<trigger>();
 	tokens.expect<assign>();
 	tokens.expect<declaration>();
+	tokens.expect<for_loop>();
+	tokens.expect<module_instance>();
 
 	tokens.increment(true);
 	tokens.expect(";");
@@ -91,12 +95,18 @@ void module_def::parse(tokenizer &tokens, void *data) {
 			items.push_back(shared_ptr<parse::syntax>(new trigger(tokens, data)));
 		} else if (tokens.found<assign>()) {
 			items.push_back(shared_ptr<parse::syntax>(new assign(tokens, data)));
+		} else if (tokens.found<for_loop>()) {
+			items.push_back(shared_ptr<parse::syntax>(new for_loop(tokens, data)));
+		} else if (tokens.found<module_instance>()) {
+			items.push_back(shared_ptr<parse::syntax>(new module_instance(tokens, data)));
 		}
 
 		tokens.increment(false);
 		tokens.expect<trigger>();
 		tokens.expect<assign>();
 		tokens.expect<declaration>();
+		tokens.expect<for_loop>();
+		tokens.expect<module_instance>();
 	}
 	
 	// Parse endmodule
@@ -123,6 +133,8 @@ void module_def::register_syntax(tokenizer &tokens) {
 		declaration::register_syntax(tokens);
 		trigger::register_syntax(tokens);
 		assign::register_syntax(tokens);
+		for_loop::register_syntax(tokens);
+		module_instance::register_syntax(tokens);
 	}
 }
 

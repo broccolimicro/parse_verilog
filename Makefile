@@ -1,6 +1,6 @@
 NAME          = parse_verilog
-DEPEND        = parse_expression parse parse_ucs common
-TEST_DEPEND   = parse_expression parse parse_ucs common
+DEPEND        = parse parse_ucs common
+TEST_DEPEND   = parse parse_ucs common
 
 COVERAGE ?= 0
 

@@ -11,7 +11,7 @@
 #include <parse/default/instance.h>
 #include <parse/default/white_space.h>
 
-namespace parse_expression
+namespace parse_verilog
 {
 
 operation_set::operation_set()

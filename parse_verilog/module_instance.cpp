@@ -83,7 +83,7 @@ void module_instance::parse(tokenizer &tokens, void *data) {
 	
 		tokens.increment(not first);
 		tokens.expect(".");  // Named connection
-		tokens.expect<parse_expression::expression>();
+		tokens.expect<expression>();
 
 		if (tokens.decrement(__FILE__, __LINE__, data)) {
 			port_connection conn;
@@ -94,7 +94,7 @@ void module_instance::parse(tokenizer &tokens, void *data) {
 				tokens.expect(")");
 		
 				tokens.increment(true);
-				tokens.expect<parse_expression::expression>();
+				tokens.expect<expression>();
 
 				tokens.increment(true);
 				tokens.expect("(");
@@ -151,7 +151,7 @@ void module_instance::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::new_line>(false);
 		
 		// Register components
-		parse_expression::expression::register_syntax(tokens);
+		expression::register_syntax(tokens);
 	}
 }
 

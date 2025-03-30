@@ -5,6 +5,7 @@
 
 #include "assignment_statement.h"
 #include "if_statement.h"
+#include "loop_statement.h"
 #include "block_statement.h"
 
 namespace parse_verilog {
@@ -27,6 +28,7 @@ void trigger::parse(tokenizer &tokens, void *data) {
 	tokens.increment(true);
 	tokens.expect<assignment_statement>();
 	tokens.expect<if_statement>();
+	tokens.expect<loop_statement>();
 	tokens.expect<block_statement>();
 
 	// Parse "trigger" keyword
@@ -45,7 +47,7 @@ void trigger::parse(tokenizer &tokens, void *data) {
 		tokens.expect(")");
 
 		tokens.increment(true);
-		tokens.expect<parse_expression::expression>();
+		tokens.expect<expression>();
 		tokens.expect("*");
 
 		// Expect opening parenthesis
@@ -94,10 +96,11 @@ void trigger::register_syntax(tokenizer &tokens) {
 		tokens.register_syntax<trigger>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();
-		parse_expression::expression::register_syntax(tokens);
-		block_statement::register_syntax(tokens);
-		if_statement::register_syntax(tokens);
+		expression::register_syntax(tokens);
 		assignment_statement::register_syntax(tokens);
+		if_statement::register_syntax(tokens);
+		loop_statement::register_syntax(tokens);
+		block_statement::register_syntax(tokens);
 	}
 }
 

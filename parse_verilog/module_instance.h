@@ -1,7 +1,7 @@
 #pragma once
 
 #include <parse/syntax.h>
-#include <parse_expression/expression.h>
+#include <parse_verilog/expression.h>
 
 #include <string>
 #include <vector>
@@ -15,7 +15,7 @@ struct port_connection {
 	~port_connection();
 	
 	string port_name;  // Empty for positional connection
-	parse_expression::expression expr;
+	expression expr;
 	
 	string to_string(string tab = "") const;
 };

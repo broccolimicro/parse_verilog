@@ -1,10 +1,9 @@
 #pragma once
 
-#include <parse/parse.h>
 #include <parse/syntax.h>
-
-#include <parse_verilog/block_statement.h>
 #include <parse_verilog/expression.h>
+#include <parse_verilog/assignment_statement.h>
+#include <parse_verilog/block_statement.h>
 
 #include <string>
 
@@ -12,12 +11,14 @@ using namespace std;
 
 namespace parse_verilog {
 
-struct trigger : parse::syntax {
-    trigger();
-    trigger(tokenizer &tokens, void *data = nullptr);
-    ~trigger();
+struct loop_statement : parse::syntax {
+    loop_statement();
+    loop_statement(tokenizer &tokens, void *data = nullptr);
+    ~loop_statement();
 
-    expression condition;
+		assignment_statement init;
+		expression cond;
+		assignment_statement step;
     block_statement body;
 
     void parse(tokenizer &tokens, void *data = nullptr);
@@ -28,4 +29,4 @@ struct trigger : parse::syntax {
     parse::syntax *clone() const;
 };
 
-} 
+} // namespace parse_verilog 

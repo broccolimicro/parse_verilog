@@ -2,9 +2,10 @@
 #include <parse/default/white_space.h>
 #include <parse/default/new_line.h>
 
-#include "if_statement.h"
-#include "block_statement.h"
 #include "assignment_statement.h"
+#include "if_statement.h"
+#include "loop_statement.h"
+#include "block_statement.h"
 
 namespace parse_verilog {
 
@@ -34,6 +35,7 @@ void if_statement::parse(tokenizer &tokens, void *data) {
 		tokens.increment(true);
 		tokens.expect<assignment_statement>();
 		tokens.expect<if_statement>();
+		tokens.expect<loop_statement>();
 		tokens.expect<block_statement>();
 
 		tokens.increment(first);
@@ -51,7 +53,7 @@ void if_statement::parse(tokenizer &tokens, void *data) {
 
 			// Parse condition
 			tokens.increment(true);
-			tokens.expect<parse_expression::expression>();
+			tokens.expect<expression>();
 
 			// Expect opening parenthesis
 			tokens.increment(true);
@@ -62,7 +64,7 @@ void if_statement::parse(tokenizer &tokens, void *data) {
 			}
 			
 			if (tokens.decrement(__FILE__, __LINE__, data)) {
-				condition.push_back(parse_expression::expression(tokens, 0, data));
+				condition.push_back(expression(tokens, 0, data));
 			}
 			
 			if (tokens.decrement(__FILE__, __LINE__, data)) {
@@ -96,8 +98,9 @@ void if_statement::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::new_line>(false);
 		
 		// Register components
-		if_statement::register_syntax(tokens);
 		assignment_statement::register_syntax(tokens);
+		if_statement::register_syntax(tokens);
+		loop_statement::register_syntax(tokens);
 		block_statement::register_syntax(tokens);
 	}
 }

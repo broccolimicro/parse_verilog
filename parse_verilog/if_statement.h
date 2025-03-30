@@ -2,7 +2,7 @@
 
 #include <parse/syntax.h>
 
-#include <parse_expression/expression.h>
+#include <parse_verilog/expression.h>
 #include <parse_verilog/block_statement.h>
 
 #include <vector>
@@ -18,7 +18,7 @@ struct if_statement : parse::syntax {
 	if_statement(tokenizer &tokens, void *data = nullptr);
 	~if_statement();
 
-	vector<parse_expression::expression> condition;
+	vector<expression> condition;
 	vector<block_statement> body;
 
 	void parse(tokenizer &tokens, void *data = nullptr);

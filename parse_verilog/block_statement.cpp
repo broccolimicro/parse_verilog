@@ -4,6 +4,7 @@
 
 #include "block_statement.h"
 #include "if_statement.h"
+#include "loop_statement.h"
 #include "assignment_statement.h"
 
 namespace parse_verilog {
@@ -36,24 +37,29 @@ void block_statement::parse(tokenizer &tokens, void *data) {
 	}
 
 	tokens.increment(one);
-	tokens.expect<if_statement>();
 	tokens.expect<assignment_statement>();
+	tokens.expect<if_statement>();
+	tokens.expect<loop_statement>();
 	tokens.expect<block_statement>();
 	
 	while (tokens.decrement(__FILE__, __LINE__, data)) {
-		if (tokens.found<if_statement>()) {
-			sub.push_back(shared_ptr<parse::syntax>(new if_statement(tokens, data)));
-		} else if (tokens.found<assignment_statement>()) {
+		if (tokens.found<assignment_statement>()) {
 			sub.push_back(shared_ptr<parse::syntax>(new assignment_statement(tokens, data)));
+		} else if (tokens.found<if_statement>()) {
+			sub.push_back(shared_ptr<parse::syntax>(new if_statement(tokens, data)));
+		} else if (tokens.found<loop_statement>()) {
+			sub.push_back(shared_ptr<parse::syntax>(new loop_statement(tokens, data)));
 		} else if (tokens.found<block_statement>()) {
 			sub.push_back(shared_ptr<parse::syntax>(new block_statement(tokens, data)));
 		}
 
+
 		if (not one) {
 			tokens.increment(false);
-			tokens.expect<block_statement>();
-			tokens.expect<if_statement>();
 			tokens.expect<assignment_statement>();
+			tokens.expect<if_statement>();
+			tokens.expect<loop_statement>();
+			tokens.expect<block_statement>();
 		} else {
 			break;
 		}
@@ -78,8 +84,9 @@ void block_statement::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::new_line>(false);
 		
 		// Register components
-		if_statement::register_syntax(tokens);
 		assignment_statement::register_syntax(tokens);
+		if_statement::register_syntax(tokens);
+		loop_statement::register_syntax(tokens);
 	}
 }
 

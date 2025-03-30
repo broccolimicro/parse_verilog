@@ -6,12 +6,10 @@ namespace parse_verilog {
 
 assignment_statement::assignment_statement() {
 	debug_name = "assignment_statement";
-	name = "";
 }
 
 assignment_statement::assignment_statement(tokenizer &tokens, void *data) {
 	debug_name = "assignment_statement";
-	name = "";
 	parse(tokens, data);
 }
 
@@ -27,18 +25,19 @@ void assignment_statement::parse(tokenizer &tokens, void *data) {
 
 	// Parse right-hand side expression
 	tokens.increment(true);
-	tokens.expect<parse_expression::expression>();
+	tokens.expect<expression>();
 
 	// Parse equals sign
 	tokens.increment(true);
 	tokens.expect("<=");
+	tokens.expect("=");
 
 	// Parse left-hand side (target)
 	tokens.increment(true);
-	tokens.expect<parse::instance>();
+	tokens.expect<parse_ucs::variable_name>();
 
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		name = tokens.next();
+		name.parse(tokens, data);
 	}
 
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
@@ -57,7 +56,7 @@ void assignment_statement::parse(tokenizer &tokens, void *data) {
 }
 
 bool assignment_statement::is_next(tokenizer &tokens, int i, void *data) {
-	return tokens.is_next("<=", i+1);
+	return tokens.is_next("<=", i+1) or tokens.is_next("=", i+1);
 }
 
 void assignment_statement::register_syntax(tokenizer &tokens) {
@@ -67,7 +66,8 @@ void assignment_statement::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::instance>();
 		
 		// Register components
-		parse_expression::expression::register_syntax(tokens);
+		parse_ucs::variable_name::register_syntax(tokens);
+		expression::register_syntax(tokens);
 	}
 }
 
@@ -76,7 +76,7 @@ string assignment_statement::to_string(string tab) const {
 		return "";
 	}
 	
-	return name + " <= " + expr.to_string(tab) + ";";
+	return name.to_string(tab) + " <= " + expr.to_string(tab) + ";";
 }
 
 parse::syntax *assignment_statement::clone() const {

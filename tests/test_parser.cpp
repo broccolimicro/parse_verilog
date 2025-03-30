@@ -6,7 +6,7 @@
 #include <parse_verilog/block_statement.h>
 #include <parse_verilog/assignment_statement.h>
 #include <parse_verilog/declaration.h>
-#include <parse_verilog/for_loop.h>
+#include <parse_verilog/loop_statement.h>
 #include <parse_verilog/module_instance.h>
 #include <sstream>
 #include <string>
@@ -98,7 +98,7 @@ endmodule)";
 		EXPECT_TRUE(dynamic_cast<assign*>(item.get()) != nullptr);
 		
 		assign* assign_stmt = dynamic_cast<assign*>(item.get());
-		EXPECT_EQ(assign_stmt->name, "c");
+		EXPECT_EQ(assign_stmt->name.to_string(), "c");
 		EXPECT_TRUE(assign_stmt->expr.valid);
 	}
 
@@ -279,17 +279,17 @@ endmodule)";
 		// First assignment (sum)
 		shared_ptr<parse::syntax> item1 = dut.items[0];
 		EXPECT_TRUE(dynamic_cast<assign*>(item1.get()) != nullptr);
-		EXPECT_EQ(dynamic_cast<assign*>(item1.get())->name, "sum");
+		EXPECT_EQ(dynamic_cast<assign*>(item1.get())->name.to_string(), "sum");
 		
 		// Second assignment (diff)
 		shared_ptr<parse::syntax> item2 = dut.items[1];
 		EXPECT_TRUE(dynamic_cast<assign*>(item2.get()) != nullptr);
-		EXPECT_EQ(dynamic_cast<assign*>(item2.get())->name, "diff");
+		EXPECT_EQ(dynamic_cast<assign*>(item2.get())->name.to_string(), "diff");
 		
 		// Third assignment (product)
 		shared_ptr<parse::syntax> item3 = dut.items[2];
 		EXPECT_TRUE(dynamic_cast<assign*>(item3.get()) != nullptr);
-		EXPECT_EQ(dynamic_cast<assign*>(item3.get())->name, "product");
+		EXPECT_EQ(dynamic_cast<assign*>(item3.get())->name.to_string(), "product");
 	}
 
 	EXPECT_EQ(dut.to_string(""), verilog_code);
@@ -298,7 +298,7 @@ endmodule)";
 TEST(VerilogParser, ForLoop) {
 	// Test module with a for loop
 	string verilog_code = 
-R"(module for_loop_test(
+R"(module loop_statement_test(
 	input wire clk,
 	input wire reset,
 	output reg [7:0] out
@@ -314,11 +314,11 @@ endmodule)";
 	
 	tokenizer tokens;
 	module_def::register_syntax(tokens);
-	tokens.insert("for_loop_test", verilog_code);
+	tokens.insert("loop_statement_test", verilog_code);
 	
 	module_def dut(tokens);
 	EXPECT_TRUE(dut.valid);
-	EXPECT_EQ(dut.name, "for_loop_test");
+	EXPECT_EQ(dut.name, "loop_statement_test");
 	EXPECT_EQ(dut.ports.size(), 3u);
 	EXPECT_EQ(dut.items.size(), 1u);  // One always block with for loop
 	
@@ -334,16 +334,20 @@ endmodule)";
 		// The body should contain a for loop
 		if (always_block->body.sub.size() > 0) {
 			shared_ptr<parse::syntax> loop = always_block->body.sub[0];
-			EXPECT_TRUE(dynamic_cast<for_loop*>(loop.get()) != nullptr);
+			EXPECT_TRUE(dynamic_cast<loop_statement*>(loop.get()) != nullptr);
 			
-			for_loop* for_ptr = dynamic_cast<for_loop*>(loop.get());
-			// Check for loop components
-			EXPECT_EQ(for_ptr->init_var, "i");
-			EXPECT_TRUE(for_ptr->init_expr.valid);
-			EXPECT_TRUE(for_ptr->condition.valid);
-			EXPECT_EQ(for_ptr->incr_var, "i");
-			EXPECT_TRUE(for_ptr->incr_expr.valid);
+			loop_statement* for_ptr = dynamic_cast<loop_statement*>(loop.get());
+			// Check for loop components - updated to match new implementation
+			EXPECT_TRUE(for_ptr->init.valid);
+			EXPECT_TRUE(for_ptr->cond.valid);
+			EXPECT_TRUE(for_ptr->step.valid);
 			EXPECT_TRUE(for_ptr->body.valid);
+			
+			// Check that initialization is "i = 0"
+			EXPECT_EQ(for_ptr->init.name.to_string(), "i");
+			
+			// Check that step is "i = i + 1"
+			EXPECT_EQ(for_ptr->step.name.to_string(), "i");
 		}
 	}
 
@@ -389,8 +393,13 @@ endmodule)";
 		// Check port connections
 		if (inst_ptr->connections.size() >= 3) {
 			EXPECT_EQ(inst_ptr->connections[0].port_name, "clk");
+			EXPECT_TRUE(inst_ptr->connections[0].expr.valid);
+			
 			EXPECT_EQ(inst_ptr->connections[1].port_name, "reset");
+			EXPECT_TRUE(inst_ptr->connections[1].expr.valid);
+			
 			EXPECT_EQ(inst_ptr->connections[2].port_name, "count");
+			EXPECT_TRUE(inst_ptr->connections[2].expr.valid);
 		}
 	}
 

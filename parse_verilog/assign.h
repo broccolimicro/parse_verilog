@@ -3,7 +3,8 @@
 #include <parse/parse.h>
 #include <parse/syntax.h>
 
-#include <parse_expression/expression.h>
+#include <parse_ucs/variable_name.h>
+#include <parse_verilog/expression.h>
 
 #include <string>
 
@@ -17,10 +18,10 @@ struct assign : parse::syntax {
 	~assign();
 
 	// The left side (target) of the assignment
-	string name;
+	parse_ucs::variable_name name;
 	
 	// The right side (expression) of the assignment
-	parse_expression::expression expr;
+	expression expr;
 
 	void parse(tokenizer &tokens, void *data = nullptr);
 	static bool is_next(tokenizer &tokens, int i = 1, void *data = nullptr);

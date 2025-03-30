@@ -4,7 +4,7 @@
 #include <parse/syntax.h>
 #include <parse_ucs/variable_name.h>
 
-namespace parse_expression
+namespace parse_verilog
 {
 using parse_ucs::variable_name;
 

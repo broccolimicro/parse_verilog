@@ -1,7 +1,8 @@
 #pragma once
 
+#include <parse_verilog/expression.h>
+
 #include <parse/parse.h>
-#include <parse_expression/expression.h>
 #include <string>
 
 using namespace std;
@@ -18,12 +19,12 @@ struct declaration : parse::syntax {
 
 	string type;
 
-	parse_expression::expression msb;
-	parse_expression::expression lsb;
+	expression msb;
+	expression lsb;
 
 	string name;
 	
-	vector<array<parse_expression::expression, 2> > size;
+	vector<array<expression, 2> > size;
 
 	void parse(tokenizer &tokens, void *data = nullptr);
 	static bool is_next(tokenizer &tokens, int i = 1, void *data = nullptr);

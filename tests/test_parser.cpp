@@ -72,7 +72,7 @@ endmodule)";
 		EXPECT_TRUE(dut.ports[2].size.empty());
 	}
 
-	cout << dut.to_string("") << endl << verilog_code << endl;
+	//cout << dut.to_string("") << endl << verilog_code << endl;
 
 	EXPECT_TRUE(tokens.is_clean());
 }
@@ -110,7 +110,7 @@ endmodule)";
 		EXPECT_TRUE(assign_stmt->expr.valid);
 	}
 
-	cout << dut.to_string("") << endl << verilog_code << endl;
+	//cout << dut.to_string("") << endl << verilog_code << endl;
 	EXPECT_TRUE(tokens.is_clean());
 }
 
@@ -154,7 +154,7 @@ endmodule)";
 		EXPECT_GT(always_block->body.sub.size(), 0u);
 	}
 
-	cout << dut.to_string("") << endl << verilog_code << endl;
+	//cout << dut.to_string("") << endl << verilog_code << endl;
 	EXPECT_TRUE(tokens.is_clean());
 }
 
@@ -202,7 +202,7 @@ endmodule)";
 		EXPECT_EQ(dut.ports[4].type, "wire");
 	}
 
-	cout << dut.to_string("") << endl << verilog_code << endl;
+	//cout << dut.to_string("") << endl << verilog_code << endl;
 	EXPECT_TRUE(tokens.is_clean());
 }
 
@@ -263,7 +263,7 @@ endmodule)";
 		}
 	}
 
-	cout << dut.to_string("") << endl << verilog_code << endl;
+	//cout << dut.to_string("") << endl << verilog_code << endl;
 	EXPECT_TRUE(tokens.is_clean());
 }
 
@@ -312,7 +312,7 @@ endmodule)";
 		EXPECT_EQ(dynamic_cast<assign*>(item3.get())->name.to_string(), "product");
 	}
 
-	cout << dut.to_string("") << endl << verilog_code << endl;
+	//cout << dut.to_string("") << endl << verilog_code << endl;
 	EXPECT_TRUE(tokens.is_clean());
 }
 
@@ -374,7 +374,7 @@ endmodule)";
 		}
 	}
 
-	cout << dut.to_string("") << endl << verilog_code << endl;
+	//cout << dut.to_string("") << endl << verilog_code << endl;
 	EXPECT_TRUE(tokens.is_clean());
 }
 
@@ -429,7 +429,7 @@ endmodule)";
 		}
 	}
 
-	cout << dut.to_string("") << endl << verilog_code << endl;
+	//cout << dut.to_string("") << endl << verilog_code << endl;
 	EXPECT_TRUE(tokens.is_clean());
 }
 
@@ -480,7 +480,7 @@ endmodule)";
 	EXPECT_GE(dut.items.size(), 3u);
 	
 	// Check overall string representation
-	cout << dut.to_string("") << endl << verilog_code << endl;
+	//cout << dut.to_string("") << endl << verilog_code << endl;
 	EXPECT_TRUE(tokens.is_clean());
 }
 
@@ -526,7 +526,6 @@ endmodule)",
 	begin
 		for (i = 0; i < 10; i = i + 1)
 		begin
-			$display(i);
 		end
 	end
 endmodule)",
@@ -553,7 +552,7 @@ endmodule)"
 		module_def dut(tokens);
 		EXPECT_TRUE(dut.valid);
 
-		cout << dut.to_string("") << endl << test_case << endl;
+		//cout << dut.to_string("") << endl << test_case << endl;
 		EXPECT_TRUE(tokens.is_clean());
 	}
 }

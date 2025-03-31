@@ -105,6 +105,13 @@ void module_def::parse(tokenizer &tokens, void *data) {
 	while (tokens.decrement(__FILE__, __LINE__, data)) {
 		if (tokens.found<declaration>()) {
 			items.push_back(shared_ptr<parse::syntax>(new declaration(tokens, data)));
+
+			tokens.increment(true);
+			tokens.expect(";");
+
+			if (tokens.decrement(__FILE__, __LINE__, data)) {
+				tokens.next();
+			}
 		} else if (tokens.found<assign>()) {
 			items.push_back(shared_ptr<parse::syntax>(new assign(tokens, data)));
 		} else if (tokens.found<trigger>()) {

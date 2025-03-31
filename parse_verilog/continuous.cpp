@@ -71,9 +71,9 @@ string continuous::to_string(string tab) const {
 	}
 
 	if (assign.valid) {
-		return (force ? "force " : "assign ") + assign.to_string(tab) + ";";
+		return (force ? "force " : "assign ") + assign.to_string(tab);
 	} else if (deassign.valid) {
-		return (force ? "release " : "deassign ") + deassign.to_string(tab) + ";";
+		return (force ? "release " : "deassign ") + deassign.to_string(tab);
 	}
 	return "";
 }

@@ -180,7 +180,12 @@ std::string module_def::to_string(std::string tab) const {
 	
 	// Module items
 	for (int i = 0; i < (int)items.size(); i++) {
-		result += tab + "\t" + items[i]->to_string(tab + "\t") + "\n";
+		result += tab + "\t" + items[i]->to_string(tab + "\t");
+		if (items[i]->is_a<continuous>() or items[i]->is_a<declaration>()) {
+			result += ";";
+		}
+
+		result += "\n";
 	}
 	
 	result += tab + "endmodule";

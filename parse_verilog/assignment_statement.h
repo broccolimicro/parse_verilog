@@ -19,6 +19,8 @@ struct assignment_statement : parse::syntax {
 
 	// The left side (target) of the assignment_statementment
 	parse_ucs::variable_name name;
+
+	bool blocking;
 	
 	// The right side (expression) of the assignment_statementment
 	expression expr;

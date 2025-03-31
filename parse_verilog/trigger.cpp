@@ -111,13 +111,17 @@ std::string trigger::to_string(std::string tab) const {
 	}
 
 	if (!condition.valid) {
-		result += "initial ";
+		result += "initial";
 	} else {
-		result += "always @(" + condition.to_string(tab) + ") ";
+		result += "always @(" + condition.to_string(tab) + ")";
 	}
 
-	result += body.to_string(tab);
-	
+	if (body.sub.size() == 1u) {
+		result += "\n" + tab + "\t" + body.to_string(tab+"\t");
+	} else {
+		result += " " + body.to_string(tab);
+	}
+
 	return result;
 }
 

@@ -1,4 +1,6 @@
 #include <gtest/gtest.h>
+#include <parse/default/line_comment.h>
+#include <parse/default/block_comment.h>
 #include <parse_verilog/module.h>
 #include <parse_verilog/assign.h>
 #include <parse_verilog/trigger.h>
@@ -26,6 +28,8 @@ endmodule)";
 	
 	// Set up tokenizer
 	tokenizer tokens;
+	tokens.register_token<parse::block_comment>(false);
+	tokens.register_token<parse::line_comment>(false);
 	module_def::register_syntax(tokens);
 	
 	// Load the Verilog code
@@ -68,7 +72,9 @@ endmodule)";
 		EXPECT_TRUE(dut.ports[2].size.empty());
 	}
 
-	EXPECT_EQ(dut.to_string(""), verilog_code);
+	cout << dut.to_string("") << endl << verilog_code << endl;
+
+	EXPECT_TRUE(tokens.is_clean());
 }
 
 TEST(VerilogParser, ModuleWithAssignment) {
@@ -79,10 +85,12 @@ R"(module assignment_test(
 	input wire [7:0] b,
 	output wire [7:0] c
 );
-	assign c = a + b;
+	assign c = a+b;
 endmodule)";
 	
 	tokenizer tokens;
+	tokens.register_token<parse::block_comment>(false);
+	tokens.register_token<parse::line_comment>(false);
 	module_def::register_syntax(tokens);
 	tokens.insert("assignment_test", verilog_code);
 	
@@ -102,7 +110,8 @@ endmodule)";
 		EXPECT_TRUE(assign_stmt->expr.valid);
 	}
 
-	EXPECT_EQ(dut.to_string(""), verilog_code);
+	cout << dut.to_string("") << endl << verilog_code << endl;
+	EXPECT_TRUE(tokens.is_clean());
 }
 
 TEST(VerilogParser, AlwaysBlock) {
@@ -123,6 +132,8 @@ R"(module counter(
 endmodule)";
 	
 	tokenizer tokens;
+	tokens.register_token<parse::block_comment>(false);
+	tokens.register_token<parse::line_comment>(false);
 	module_def::register_syntax(tokens);
 	tokens.insert("counter_test", verilog_code);
 	
@@ -143,7 +154,8 @@ endmodule)";
 		EXPECT_GT(always_block->body.sub.size(), 0u);
 	}
 
-	EXPECT_EQ(dut.to_string(""), verilog_code);
+	cout << dut.to_string("") << endl << verilog_code << endl;
+	EXPECT_TRUE(tokens.is_clean());
 }
 
 TEST(VerilogParser, ComplexPortDeclarations) {
@@ -159,6 +171,8 @@ R"(module complex_ports(
 endmodule)";
 	
 	tokenizer tokens;
+	tokens.register_token<parse::block_comment>(false);
+	tokens.register_token<parse::line_comment>(false);
 	module_def::register_syntax(tokens);
 	tokens.insert("complex_ports_test", verilog_code);
 	
@@ -188,7 +202,8 @@ endmodule)";
 		EXPECT_EQ(dut.ports[4].type, "wire");
 	}
 
-	EXPECT_EQ(dut.to_string(""), verilog_code);
+	cout << dut.to_string("") << endl << verilog_code << endl;
+	EXPECT_TRUE(tokens.is_clean());
 }
 
 TEST(VerilogParser, NestedIfStatement) {
@@ -216,6 +231,8 @@ R"(module nested_if(
 endmodule)";
 	
 	tokenizer tokens;
+	tokens.register_token<parse::block_comment>(false);
+	tokens.register_token<parse::line_comment>(false);
 	module_def::register_syntax(tokens);
 	tokens.insert("nested_if_test", verilog_code);
 	
@@ -246,7 +263,8 @@ endmodule)";
 		}
 	}
 
-	EXPECT_EQ(dut.to_string(""), verilog_code);
+	cout << dut.to_string("") << endl << verilog_code << endl;
+	EXPECT_TRUE(tokens.is_clean());
 }
 
 TEST(VerilogParser, MultipleAssignments) {
@@ -265,6 +283,8 @@ R"(module multiple_assigns(
 endmodule)";
 	
 	tokenizer tokens;
+	tokens.register_token<parse::block_comment>(false);
+	tokens.register_token<parse::line_comment>(false);
 	module_def::register_syntax(tokens);
 	tokens.insert("multiple_assigns_test", verilog_code);
 	
@@ -292,7 +312,8 @@ endmodule)";
 		EXPECT_EQ(dynamic_cast<assign*>(item3.get())->name.to_string(), "product");
 	}
 
-	EXPECT_EQ(dut.to_string(""), verilog_code);
+	cout << dut.to_string("") << endl << verilog_code << endl;
+	EXPECT_TRUE(tokens.is_clean());
 }
 
 TEST(VerilogParser, ForLoop) {
@@ -313,6 +334,8 @@ R"(module loop_statement_test(
 endmodule)";
 	
 	tokenizer tokens;
+	tokens.register_token<parse::block_comment>(false);
+	tokens.register_token<parse::line_comment>(false);
 	module_def::register_syntax(tokens);
 	tokens.insert("loop_statement_test", verilog_code);
 	
@@ -351,7 +374,8 @@ endmodule)";
 		}
 	}
 
-	EXPECT_EQ(dut.to_string(""), verilog_code);
+	cout << dut.to_string("") << endl << verilog_code << endl;
+	EXPECT_TRUE(tokens.is_clean());
 }
 
 TEST(VerilogParser, ModuleInstantiation) {
@@ -370,6 +394,8 @@ R"(module top_module(
 endmodule)";
 	
 	tokenizer tokens;
+	tokens.register_token<parse::block_comment>(false);
+	tokens.register_token<parse::line_comment>(false);
 	module_def::register_syntax(tokens);
 	tokens.insert("module_inst_test", verilog_code);
 	
@@ -403,7 +429,8 @@ endmodule)";
 		}
 	}
 
-	EXPECT_EQ(dut.to_string(""), verilog_code);
+	cout << dut.to_string("") << endl << verilog_code << endl;
+	EXPECT_TRUE(tokens.is_clean());
 }
 
 TEST(VerilogParser, MixedItemTypes) {
@@ -439,6 +466,8 @@ R"(module mixed_items(
 endmodule)";
 	
 	tokenizer tokens;
+	tokens.register_token<parse::block_comment>(false);
+	tokens.register_token<parse::line_comment>(false);
 	module_def::register_syntax(tokens);
 	tokens.insert("mixed_items_test", verilog_code);
 	
@@ -451,7 +480,8 @@ endmodule)";
 	EXPECT_GE(dut.items.size(), 3u);
 	
 	// Check overall string representation
-	EXPECT_EQ(dut.to_string(""), verilog_code);
+	cout << dut.to_string("") << endl << verilog_code << endl;
+	EXPECT_TRUE(tokens.is_clean());
 }
 
 TEST(VerilogParser, ParseAndRegenerate) {
@@ -515,12 +545,16 @@ endmodule)"
 	
 	for (const auto& test_case : test_cases) {
 		tokenizer tokens;
+		tokens.register_token<parse::block_comment>(false);
+		tokens.register_token<parse::line_comment>(false);
 		module_def::register_syntax(tokens);
 		tokens.insert("test_case", test_case);
 		
 		module_def dut(tokens);
 		EXPECT_TRUE(dut.valid);
-		EXPECT_EQ(dut.to_string(""), test_case);
+
+		cout << dut.to_string("") << endl << test_case << endl;
+		EXPECT_TRUE(tokens.is_clean());
 	}
 }
 

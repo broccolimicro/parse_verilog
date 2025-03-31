@@ -11,6 +11,8 @@
 #include <parse/default/instance.h>
 #include <parse/default/white_space.h>
 
+#include <cctype>
+
 namespace parse_verilog
 {
 
@@ -35,7 +37,6 @@ expression::expression()
 {
 	debug_name = "expression";
 	level = 0;
-	region = "";
 	init();
 }
 
@@ -43,7 +44,6 @@ expression::expression(tokenizer &tokens, int level, void *data)
 {
 	debug_name = "expression";
 	this->level = level;
-	region = "";
 	init();
 	parse(tokens, data);
 }
@@ -57,31 +57,47 @@ void expression::init()
 	if (precedence.size() == 0)
 	{
 		precedence.push_back(operation_set(operation_set::binary));
+		precedence.back().symbols.push_back("or");
+		precedence.back().symbols.push_back(",");
+
+		precedence.push_back(operation_set(operation_set::left_unary));
+		precedence.back().symbols.push_back("posedge");
+		precedence.back().symbols.push_back("negedge");
+
+		precedence.push_back(operation_set(operation_set::binary));
+		precedence.back().symbols.push_back("||");
+
+		precedence.push_back(operation_set(operation_set::binary));
+		precedence.back().symbols.push_back("&&");
+
+		precedence.push_back(operation_set(operation_set::binary));
 		precedence.back().symbols.push_back("|");
+
+		precedence.push_back(operation_set(operation_set::binary));
+		precedence.back().symbols.push_back("^");
+		precedence.back().symbols.push_back("~^");
+		precedence.back().symbols.push_back("^~");
 
 		precedence.push_back(operation_set(operation_set::binary));
 		precedence.back().symbols.push_back("&");
 
 		precedence.push_back(operation_set(operation_set::binary));
-		precedence.back().symbols.push_back("^");
+		precedence.back().symbols.push_back("==");
+		precedence.back().symbols.push_back("!=");
+		precedence.back().symbols.push_back("===");
+		precedence.back().symbols.push_back("!==");
 
 		precedence.push_back(operation_set(operation_set::binary));
-		precedence.back().symbols.push_back("==");
-		precedence.back().symbols.push_back("~=");
 		precedence.back().symbols.push_back("<");
-		precedence.back().symbols.push_back(">");
 		precedence.back().symbols.push_back("<=");
+		precedence.back().symbols.push_back(">");
 		precedence.back().symbols.push_back(">=");
 
 		precedence.push_back(operation_set(operation_set::binary));
-		precedence.back().symbols.push_back("||");
-		
-		precedence.push_back(operation_set(operation_set::binary));
-		precedence.back().symbols.push_back("&&");
-
-		precedence.push_back(operation_set(operation_set::binary));
-		precedence.back().symbols.push_back("<<");
 		precedence.back().symbols.push_back(">>");
+		precedence.back().symbols.push_back("<<");
+		precedence.back().symbols.push_back(">>>");
+		precedence.back().symbols.push_back("<<<");
 
 		precedence.push_back(operation_set(operation_set::binary));
 		precedence.back().symbols.push_back("+");
@@ -92,18 +108,21 @@ void expression::init()
 		precedence.back().symbols.push_back("/");
 		precedence.back().symbols.push_back("%");
 
+		precedence.push_back(operation_set(operation_set::binary));
+		precedence.back().symbols.push_back("**");
+
 		precedence.push_back(operation_set(operation_set::left_unary));
-		precedence.back().symbols.push_back("!");
-		precedence.back().symbols.push_back("~");
-		precedence.back().symbols.push_back("?");
 		precedence.back().symbols.push_back("+");
 		precedence.back().symbols.push_back("-");
-
-		precedence.push_back(operation_set(operation_set::left_unary));
-		precedence.back().symbols.push_back("#");
-
-		precedence.push_back(operation_set(operation_set::right_unary));
-		precedence.back().symbols.push_back("?");
+		precedence.back().symbols.push_back("!");
+		precedence.back().symbols.push_back("~");
+		precedence.back().symbols.push_back("&");
+		precedence.back().symbols.push_back("~&");
+		precedence.back().symbols.push_back("|");
+		precedence.back().symbols.push_back("~|");
+		precedence.back().symbols.push_back("^");
+		precedence.back().symbols.push_back("~^");
+		precedence.back().symbols.push_back("^~");
 	}
 }
 
@@ -174,9 +193,6 @@ void expression::parse(tokenizer &tokens, void *data)
 			{
 				tokens.next();
 
-				tokens.increment(false);
-				tokens.expect("'");
-
 				tokens.increment(true);
 				tokens.expect(")");
 
@@ -189,16 +205,6 @@ void expression::parse(tokenizer &tokens, void *data)
 				if (tokens.decrement(__FILE__, __LINE__, data))
 					tokens.next();
 
-				if (tokens.decrement(__FILE__, __LINE__, data))
-				{
-					tokens.next();
-
-					tokens.increment(true);
-					tokens.expect<parse::number>();
-
-					if (tokens.decrement(__FILE__, __LINE__, data))
-						region = tokens.next();
-				}
 			}
 		}
 
@@ -260,9 +266,6 @@ void expression::parse(tokenizer &tokens, void *data)
 				{
 					tokens.next();
 
-					tokens.increment(false);
-					tokens.expect("'");
-
 					tokens.increment(true);
 					tokens.expect(")");
 
@@ -274,17 +277,7 @@ void expression::parse(tokenizer &tokens, void *data)
 
 					if (tokens.decrement(__FILE__, __LINE__, data))
 						tokens.next();
-
-					if (tokens.decrement(__FILE__, __LINE__, data))
-					{
-						tokens.next();
-
-						tokens.increment(true);
-						tokens.expect<parse::number>();
-
-						if (tokens.decrement(__FILE__, __LINE__, data))
-							region = tokens.next();
-					}
+					
 				}
 			}
 
@@ -334,39 +327,45 @@ string expression::to_string(int prev_level, string tab) const
 
 	string result = "";
 	bool paren = prev_level > level && operations.size() > 0;
-	if (paren || region != "")
+	if (paren)
 		result += "(";
 
-	if (level >= 0 && precedence[level].type == operation_set::left_unary)
-	{
-		for (int i = 0; i < (int)operations.size(); i++)
+	if (level >= 0 && precedence[level].type == operation_set::left_unary) {
+		for (int i = 0; i < (int)operations.size(); i++) {
 			result += operations[i];
+			if (isalnum(operations[i].back())) {
+				result += " ";
+			}
+		}
 
 		result += arguments[0].to_string(level, tab);
-	}
-	else if (level >= 0 && precedence[level].type == operation_set::right_unary)
-	{
+	} else if (level >= 0 && precedence[level].type == operation_set::right_unary) {
 		result += arguments[0].to_string(level, tab);
 
-		for (int i = 0; i < (int)operations.size(); i++)
+		for (int i = 0; i < (int)operations.size(); i++) {
+			if (isalnum(operations[i][0])) {
+				result += " ";
+			}
 			result += operations[i];
-	}
-	else
-	{
-		for (int i = 0; i < (int)arguments.size() && i-1 < (int)operations.size(); i++)
-		{
-			if (i != 0)
+		}
+	} else {
+		for (int i = 0; i < (int)arguments.size() && i-1 < (int)operations.size(); i++) {
+			if (i != 0) {
+				if (isalnum(operations[i-1][0])) {
+					result += " ";
+				}
 				result += operations[i-1];
+				if (isalnum(operations[i-1].back())) {
+					result += " ";
+				}
+			}
 
 			result += arguments[i].to_string(level, tab);
 		}
 	}
 
-	if (paren || region != "")
+	if (paren)
 		result += ")";
-
-	if (region != "")
-		result += "'" + region;
 
 	return result;
 }

@@ -38,7 +38,6 @@ struct expression : parse::syntax
 	vector<argument> arguments;
 	vector<string> operations;
 
-	string region;
 	int level;
 
 	static vector<operation_set> precedence;

@@ -23,9 +23,6 @@ block_statement::~block_statement() {
 
 void block_statement::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_start(this);
-	
-	tokens.increment(true);
-	tokens.expect("end");
 
 	tokens.increment(false);
 	tokens.expect("begin");
@@ -33,6 +30,9 @@ void block_statement::parse(tokenizer &tokens, void *data) {
 	bool one = true;
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
 		tokens.next();
+
+		tokens.increment(true);
+		tokens.expect("end");
 		one = false;
 	}
 
@@ -45,6 +45,13 @@ void block_statement::parse(tokenizer &tokens, void *data) {
 	while (tokens.decrement(__FILE__, __LINE__, data)) {
 		if (tokens.found<assignment_statement>()) {
 			sub.push_back(shared_ptr<parse::syntax>(new assignment_statement(tokens, data)));
+
+			tokens.increment(true);
+			tokens.expect(";");
+			
+			if (tokens.decrement(__FILE__, __LINE__, data)) {
+				tokens.next();
+			}
 		} else if (tokens.found<if_statement>()) {
 			sub.push_back(shared_ptr<parse::syntax>(new if_statement(tokens, data)));
 		} else if (tokens.found<loop_statement>()) {
@@ -65,7 +72,7 @@ void block_statement::parse(tokenizer &tokens, void *data) {
 		}
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (not one and tokens.decrement(__FILE__, __LINE__, data)) {
 		tokens.next();
 	}
 	
@@ -98,12 +105,21 @@ std::string block_statement::to_string(std::string tab) const {
 		return result;
 	}
 
+	string next = tab;
 	if (sub.size() != 1u) {
 		result += "begin\n";
+		next += "\t";
 	}
 
 	for (int i = 0; i < (int)sub.size(); i++) {
-		result += tab + sub[i]->to_string(tab+"\t") + "\n";
+		if (i != 0 or sub.size() > 1u) {
+			result += next;
+		}
+		result += sub[i]->to_string(next);
+		if (sub[i]->is_a<assignment_statement>()) {
+			result += ";";
+		}
+		result += "\n";
 	}
 
 	if (sub.size() != 1u) {

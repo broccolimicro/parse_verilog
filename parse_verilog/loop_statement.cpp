@@ -123,7 +123,14 @@ string loop_statement::to_string(string tab) const {
 		return "";
 	}
 	
-	return "for (" + init.to_string(tab) + ";" + cond.to_string(tab) + "; " + step.to_string(tab) + ") " + body.to_string(tab+"\t");
+	string result = "for (" + init.to_string(tab) + ";" + cond.to_string(tab) + "; " + step.to_string(tab) + ")";
+
+	if (body.sub.size() == 1u) {
+		result += "\n" + tab + "\t" + body.to_string(tab+"\t");
+	} else {
+		result += " " + body.to_string(tab);
+	}
+	return result;
 }
 
 parse::syntax *loop_statement::clone() const {

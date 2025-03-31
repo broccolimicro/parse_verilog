@@ -43,6 +43,9 @@ void module_def::parse(tokenizer &tokens, void *data) {
 	tokens.increment(true);
 	tokens.expect(")");
 
+	tokens.increment(false);
+	tokens.expect<declaration>();
+
 	tokens.increment(true);
 	tokens.expect("(");
 
@@ -62,18 +65,29 @@ void module_def::parse(tokenizer &tokens, void *data) {
 		name = tokens.next();
 	}
 
-	// "(port, port, ..., port"
-	while (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__, data)) {
 		tokens.next();
+	}
+
+	if (tokens.decrement(__FILE__, __LINE__, data)) {
+		ports.push_back(declaration(tokens, data));
 
 		tokens.increment(false);
 		tokens.expect(",");
 
-		tokens.increment(true);
-		tokens.expect<declaration>();
+		// "(port, port, ..., port"
+		while (tokens.decrement(__FILE__, __LINE__, data)) {
+			tokens.next();
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			ports.push_back(declaration(tokens, data));
+			tokens.increment(false);
+			tokens.expect(",");
+
+			tokens.increment(true);
+			tokens.expect<declaration>();
+
+			if (tokens.decrement(__FILE__, __LINE__, data)) {
+				ports.push_back(declaration(tokens, data));
+			}
 		}
 	}
 	

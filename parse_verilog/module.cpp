@@ -1,7 +1,7 @@
 #include "module.h"
 #include "declaration.h"
 #include "trigger.h"
-#include "assign.h"
+#include "continuous.h"
 #include "module_instance.h"
 
 #include <parse/default/symbol.h>
@@ -33,7 +33,7 @@ void module_def::parse(tokenizer &tokens, void *data) {
 
 	tokens.increment(false);
 	tokens.expect<declaration>();
-	tokens.expect<assign>();
+	tokens.expect<continuous>();
 	tokens.expect<trigger>();
 	tokens.expect<module_instance>();
 
@@ -112,8 +112,15 @@ void module_def::parse(tokenizer &tokens, void *data) {
 			if (tokens.decrement(__FILE__, __LINE__, data)) {
 				tokens.next();
 			}
-		} else if (tokens.found<assign>()) {
-			items.push_back(shared_ptr<parse::syntax>(new assign(tokens, data)));
+		} else if (tokens.found<continuous>()) {
+			items.push_back(shared_ptr<parse::syntax>(new continuous(tokens, data)));
+
+			tokens.increment(true);
+			tokens.expect(";");
+
+			if (tokens.decrement(__FILE__, __LINE__, data)) {
+				tokens.next();
+			}
 		} else if (tokens.found<trigger>()) {
 			items.push_back(shared_ptr<parse::syntax>(new trigger(tokens, data)));
 		} else if (tokens.found<module_instance>()) {
@@ -122,7 +129,7 @@ void module_def::parse(tokenizer &tokens, void *data) {
 
 		tokens.increment(false);
 		tokens.expect<declaration>();
-		tokens.expect<assign>();
+		tokens.expect<continuous>();
 		tokens.expect<trigger>();
 		tokens.expect<module_instance>();
 	}
@@ -150,7 +157,7 @@ void module_def::register_syntax(tokenizer &tokens) {
 		// Register components
 		declaration::register_syntax(tokens);
 		trigger::register_syntax(tokens);
-		assign::register_syntax(tokens);
+		continuous::register_syntax(tokens);
 		module_instance::register_syntax(tokens);
 	}
 }

@@ -4,7 +4,7 @@
 #include <parse/syntax.h>
 
 #include <parse_verilog/variable_name.h>
-#include <parse_verilog/expression.h>
+#include <parse_verilog/assignment_statement.h>
 
 #include <string>
 
@@ -12,17 +12,15 @@ using namespace std;
 
 namespace parse_verilog {
 
-struct assign : parse::syntax {
-	assign();
-	assign(tokenizer &tokens, void *data = nullptr);
-	~assign();
+struct continuous : parse::syntax {
+	continuous();
+	continuous(tokenizer &tokens, void *data = nullptr);
+	~continuous();
 
-	// The left side (target) of the assignment
-	variable_name name;
+	bool force;
+	variable_name deassign;
+	assignment_statement assign;
 	
-	// The right side (expression) of the assignment
-	expression expr;
-
 	void parse(tokenizer &tokens, void *data = nullptr);
 	static bool is_next(tokenizer &tokens, int i = 1, void *data = nullptr);
 	static void register_syntax(tokenizer &tokens);

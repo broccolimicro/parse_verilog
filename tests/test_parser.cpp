@@ -2,7 +2,7 @@
 #include <parse/default/line_comment.h>
 #include <parse/default/block_comment.h>
 #include <parse_verilog/module.h>
-#include <parse_verilog/assign.h>
+#include <parse_verilog/continuous.h>
 #include <parse_verilog/trigger.h>
 #include <parse_verilog/if_statement.h>
 #include <parse_verilog/block_statement.h>
@@ -103,11 +103,11 @@ endmodule)";
 	// Verify the assignment
 	if (dut.items.size() == 1) {
 		shared_ptr<parse::syntax> item = dut.items[0];
-		EXPECT_TRUE(dynamic_cast<assign*>(item.get()) != nullptr);
+		EXPECT_TRUE(dynamic_cast<continuous*>(item.get()) != nullptr);
 		
-		assign* assign_stmt = dynamic_cast<assign*>(item.get());
-		EXPECT_EQ(assign_stmt->name.to_string(), "c");
-		EXPECT_TRUE(assign_stmt->expr.valid);
+		continuous* assign_stmt = dynamic_cast<continuous*>(item.get());
+		EXPECT_EQ(assign_stmt->assign.name.to_string(), "c");
+		EXPECT_TRUE(assign_stmt->assign.expr.valid);
 	}
 
 	//cout << dut.to_string("") << endl << verilog_code << endl;
@@ -298,18 +298,18 @@ endmodule)";
 	if (dut.items.size() == 3) {
 		// First assignment (sum)
 		shared_ptr<parse::syntax> item1 = dut.items[0];
-		EXPECT_TRUE(dynamic_cast<assign*>(item1.get()) != nullptr);
-		EXPECT_EQ(dynamic_cast<assign*>(item1.get())->name.to_string(), "sum");
+		EXPECT_TRUE(dynamic_cast<continuous*>(item1.get()) != nullptr);
+		EXPECT_EQ(dynamic_cast<continuous*>(item1.get())->assign.name.to_string(), "sum");
 		
 		// Second assignment (diff)
 		shared_ptr<parse::syntax> item2 = dut.items[1];
-		EXPECT_TRUE(dynamic_cast<assign*>(item2.get()) != nullptr);
-		EXPECT_EQ(dynamic_cast<assign*>(item2.get())->name.to_string(), "diff");
+		EXPECT_TRUE(dynamic_cast<continuous*>(item2.get()) != nullptr);
+		EXPECT_EQ(dynamic_cast<continuous*>(item2.get())->assign.name.to_string(), "diff");
 		
 		// Third assignment (product)
 		shared_ptr<parse::syntax> item3 = dut.items[2];
-		EXPECT_TRUE(dynamic_cast<assign*>(item3.get()) != nullptr);
-		EXPECT_EQ(dynamic_cast<assign*>(item3.get())->name.to_string(), "product");
+		EXPECT_TRUE(dynamic_cast<continuous*>(item3.get()) != nullptr);
+		EXPECT_EQ(dynamic_cast<continuous*>(item3.get())->assign.name.to_string(), "product");
 	}
 
 	//cout << dut.to_string("") << endl << verilog_code << endl;

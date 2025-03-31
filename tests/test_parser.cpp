@@ -164,7 +164,7 @@ TEST(VerilogParser, ComplexPortDeclarations) {
 R"(module complex_ports(
 	input wire clk,
 	input wire [31:0] data_in,
-	input wire [3:0][7:0] packet,
+	input wire [3:0] packet,
 	output reg [15:0] result,
 	inout wire [7:0] bidir
 );

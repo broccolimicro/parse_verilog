@@ -7,7 +7,7 @@
 
 #include "expression.h"
 #include <parse/default/symbol.h>
-#include <parse/default/number.h>
+#include <parse_verilog/number.h>
 #include <parse/default/instance.h>
 #include <parse/default/white_space.h>
 
@@ -157,7 +157,7 @@ void expression::parse(tokenizer &tokens, void *data)
 		else
 		{
 			tokens.expect<variable_name>();
-			tokens.expect<parse::number>();
+			tokens.expect<parse_verilog::number>();
 			tokens.expect("gnd");
 			tokens.expect("vdd");
 			tokens.expect("(");
@@ -185,7 +185,7 @@ void expression::parse(tokenizer &tokens, void *data)
 				arguments.push_back(argument(expression(tokens, level+1, data)));
 			else if (tokens.found<variable_name>())
 				arguments.push_back(argument(variable_name(tokens, data)));
-			else if (tokens.found<parse::number>())
+			else if (tokens.found<parse_verilog::number>())
 				arguments.push_back(argument(tokens.next()));
 			else if (tokens.found("gnd") or tokens.found("vdd"))
 				arguments.push_back(argument(tokens.next()));
@@ -244,7 +244,7 @@ void expression::parse(tokenizer &tokens, void *data)
 			else
 			{
 				tokens.expect<variable_name>();
-				tokens.expect<parse::number>();
+				tokens.expect<parse_verilog::number>();
 				tokens.expect("gnd");
 				tokens.expect("vdd");
 				tokens.expect("(");
@@ -256,7 +256,7 @@ void expression::parse(tokenizer &tokens, void *data)
 					arguments.push_back(argument(expression(tokens, level+1, data)));
 				else if (tokens.found<variable_name>())
 					arguments.push_back(argument(variable_name(tokens, data)));
-				else if (tokens.found<parse::number>())
+				else if (tokens.found<parse_verilog::number>())
 					arguments.push_back(argument(tokens.next()));
 				else if (tokens.found("gnd"))
 					arguments.push_back(argument(tokens.next()));
@@ -293,7 +293,7 @@ bool expression::is_next(tokenizer &tokens, int i, void *data)
 	if (data != NULL)
 		level = *(int*)data;
 
-	bool result = tokens.is_next("(", i) || tokens.is_next<parse::number>(i) || variable_name::is_next(tokens, i, data);
+	bool result = tokens.is_next("(", i) || tokens.is_next<parse_verilog::number>(i) || variable_name::is_next(tokens, i, data);
 	for (int j = level+1; j < (int)precedence.size(); j++)
 		if (precedence[j].type == operation_set::left_unary)
 			for (int k = 0; k < (int)precedence[j].symbols.size(); k++)
@@ -308,7 +308,7 @@ void expression::register_syntax(tokenizer &tokens)
 	{
 		tokens.register_syntax<expression>();
 		tokens.register_token<parse::symbol>();
-		tokens.register_token<parse::number>();
+		tokens.register_token<parse_verilog::number>();
 		tokens.register_token<parse::instance>();
 		tokens.register_token<parse::white_space>(false);
 		variable_name::register_syntax(tokens);

@@ -2,11 +2,10 @@
 
 #include <parse/parse.h>
 #include <parse/syntax.h>
-#include <parse_ucs/variable_name.h>
+#include <parse_verilog/variable_name.h>
 
 namespace parse_verilog
 {
-using parse_ucs::variable_name;
 
 struct operation_set
 {

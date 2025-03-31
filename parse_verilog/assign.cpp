@@ -33,7 +33,7 @@ void assign::parse(tokenizer &tokens, void *data) {
 
 	// Parse left-hand side (target)
 	tokens.increment(true);
-	tokens.expect<parse_ucs::variable_name>();
+	tokens.expect<parse_verilog::variable_name>();
 
 	// Parse "assign" keyword
 	tokens.increment(true);
@@ -73,7 +73,7 @@ void assign::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::instance>();
 		
 		// Register components
-		parse_ucs::variable_name::register_syntax(tokens);
+		variable_name::register_syntax(tokens);
 		expression::register_syntax(tokens);
 	}
 }

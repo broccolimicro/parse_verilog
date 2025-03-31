@@ -3,7 +3,7 @@
 #include <parse/parse.h>
 #include <parse/syntax.h>
 
-#include <parse_ucs/variable_name.h>
+#include <parse_verilog/variable_name.h>
 #include <parse_verilog/expression.h>
 
 #include <string>
@@ -18,7 +18,7 @@ struct assign : parse::syntax {
 	~assign();
 
 	// The left side (target) of the assignment
-	parse_ucs::variable_name name;
+	variable_name name;
 	
 	// The right side (expression) of the assignment
 	expression expr;

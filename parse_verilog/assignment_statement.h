@@ -4,7 +4,7 @@
 #include <parse/syntax.h>
 
 #include <parse_verilog/expression.h>
-#include <parse_ucs/variable_name.h>
+#include <parse_verilog/variable_name.h>
 
 #include <string>
 
@@ -18,7 +18,7 @@ struct assignment_statement : parse::syntax {
 	~assignment_statement();
 
 	// The left side (target) of the assignment_statementment
-	parse_ucs::variable_name name;
+	variable_name name;
 
 	bool blocking;
 	

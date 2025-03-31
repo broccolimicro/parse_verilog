@@ -32,7 +32,7 @@ void assignment_statement::parse(tokenizer &tokens, void *data) {
 
 	// Parse left-hand side (target)
 	tokens.increment(true);
-	tokens.expect<parse_ucs::variable_name>();
+	tokens.expect<variable_name>();
 
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
 		name.parse(tokens, data);
@@ -50,7 +50,20 @@ void assignment_statement::parse(tokenizer &tokens, void *data) {
 }
 
 bool assignment_statement::is_next(tokenizer &tokens, int i, void *data) {
-	return tokens.is_next("<=", i+1) or tokens.is_next("=", i+1);
+	return not tokens.is_next("begin", i)
+		and not tokens.is_next("end", i)
+		and not tokens.is_next("input", i)
+		and not tokens.is_next("output", i)
+		and not tokens.is_next("inout", i)
+		and not tokens.is_next("if", i)
+		and not tokens.is_next("always", i)
+		and not tokens.is_next("initial", i)
+		and not tokens.is_next("assign", i)
+		and not tokens.is_next("for", i)
+		and not tokens.is_next("module", i)
+		and not tokens.is_next("endmodule", i)
+		and variable_name::is_next(tokens, i);
+	//return tokens.is_next("<=", i+1) or tokens.is_next("=", i+1);
 }
 
 void assignment_statement::register_syntax(tokenizer &tokens) {
@@ -60,7 +73,7 @@ void assignment_statement::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::instance>();
 		
 		// Register components
-		parse_ucs::variable_name::register_syntax(tokens);
+		variable_name::register_syntax(tokens);
 		expression::register_syntax(tokens);
 	}
 }

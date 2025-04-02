@@ -39,7 +39,7 @@ void assignment_statement::parse(tokenizer &tokens, void *data) {
 	}
 
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		blocking = (tokens.next() == "<=");
+		blocking = (tokens.next() == "=");
 	}
 
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
@@ -83,7 +83,7 @@ string assignment_statement::to_string(string tab) const {
 		return "";
 	}
 	
-	return name.to_string(tab) + (blocking ? " <= " : " = ")  + expr.to_string(tab);
+	return name.to_string(tab) + (blocking ? " = " : " <= ")  + expr.to_string(tab);
 }
 
 parse::syntax *assignment_statement::clone() const {

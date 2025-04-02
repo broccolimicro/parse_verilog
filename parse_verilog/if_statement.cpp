@@ -113,7 +113,12 @@ string if_statement::to_string(string tab) const {
 	
 	for (int i = 0; i < (int)body.size(); i++) {
 		if (i != 0) {
-			result += tab + "else";
+			if (body[i-1].sub.size() == 1u) {
+				result += tab;
+			} else {
+				result += " ";
+			}
+			result += "else";
 		}
 		if (i < (int)condition.size()) {
 			if (i != 0) {

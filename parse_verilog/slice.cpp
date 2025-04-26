@@ -18,6 +18,22 @@ slice::slice()
 	debug_name = "slice";
 }
 
+slice::slice(int lo, int hi) {
+	debug_name = "slice";
+	valid = true;
+	expression loExpr;
+	loExpr.valid = true;
+	loExpr.arguments.push_back(::to_string(lo));
+
+	lower = shared_ptr<parse::syntax>(new expression(loExpr));
+	if (hi > lo) {
+		expression hiExpr;
+		hiExpr.valid = true;
+		hiExpr.arguments.push_back(::to_string(hi));
+		upper = shared_ptr<parse::syntax>(new expression(hiExpr));
+	}
+}
+
 slice::slice(tokenizer &tokens, void *data)
 {
 	debug_name = "slice";

@@ -3,6 +3,8 @@
 #include <parse/parse.h>
 #include <parse/syntax.h>
 
+#include <common/net.h>
+
 #include "member_name.h"
 
 namespace parse_verilog
@@ -11,6 +13,7 @@ namespace parse_verilog
 struct variable_name : parse::syntax
 {
 	variable_name();
+	variable_name(ucs::Net net);
 	variable_name(tokenizer &tokens, void *data = NULL);
 	~variable_name();
 

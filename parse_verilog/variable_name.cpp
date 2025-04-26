@@ -11,6 +11,15 @@ variable_name::variable_name()
 	debug_name = "variable_name";
 }
 
+variable_name::variable_name(ucs::Net net) {
+	debug_name = "variable_name";
+	valid = true;
+	region = ::to_string(net.region);
+	for (int i = 0; i < (int)net.fields.size(); i++) {
+		names.push_back(net.fields[i]);
+	}
+}
+
 variable_name::variable_name(tokenizer &tokens, void *data)
 {
 	debug_name = "variable_name";

@@ -13,6 +13,7 @@ namespace parse_verilog
 struct slice : parse::syntax
 {
 	slice();
+	slice(int lo, int hi=-1);
 	slice(tokenizer &tokens, void *data = NULL);
 	~slice();
 

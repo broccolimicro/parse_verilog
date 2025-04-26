@@ -4,11 +4,14 @@
 #include <parse/syntax.h>
 #include "slice.h"
 
+#include <common/net.h>
+
 namespace parse_verilog
 {
 struct member_name : parse::syntax
 {
 	member_name();
+	member_name(ucs::Field field);
 	member_name(tokenizer &tokens, void *data = NULL);
 	~member_name();
 

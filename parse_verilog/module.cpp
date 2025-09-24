@@ -168,7 +168,9 @@ std::string module_def::to_string(std::string tab) const {
 		return result;
 	}
 	
-	result = "module " + name + "(\n";
+	result = "`timescale 1ns/1ps\n\n";
+	result += "module " + name + " (\n";  //TODO: integrate with: + " #(parameter WIDTH = 8)(\n";
+
 	// Port list
 	for (int i = 0; i < (int)ports.size(); i++) {
 		if (i != 0) {

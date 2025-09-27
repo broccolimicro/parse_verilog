@@ -12,12 +12,12 @@
 namespace parse_verilog {
 
 module_def::module_def() {
-	debug_name = "module";
+	debug_name = "verilog_module";
 	name = "";
 }
 
 module_def::module_def(tokenizer &tokens, void *data) {
-	debug_name = "module";
+	debug_name = "verilog_module";
 	name = "";
 	parse(tokens, data);
 }

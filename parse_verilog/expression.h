@@ -1,71 +1,19 @@
 #pragma once
 
-#include <parse/parse.h>
-#include <parse/syntax.h>
-#include <parse_verilog/variable_name.h>
+#include <parse_verilog/number.h>
+#include <parse_expression/expression.h>
+#include <parse_expression/assignment.h>
+#include <parse_expression/composition.h>
 
-namespace parse_verilog
-{
+namespace parse_verilog {
 
-struct operation_set
-{
-	operation_set();
-	operation_set(int type);
-	~operation_set();
+static const size_t expr_group = 2;
 
-	vector<string> symbols;
-	int type;
+using argument=parse_expression::argument_t<expr_group, parse_verilog::number>;
+using expression=parse_expression::expression_t<expr_group, parse_verilog::number>;
+using assignment=parse_expression::assignment_t<expr_group, parse_verilog::number>;
+using composition=parse_expression::composition_t<expr_group, parse_verilog::number>;
 
-	enum
-	{
-		left_unary = 0,
-		right_unary = 1,
-		binary = 2
-	};
-};
-
-struct argument;
-
-struct expression : parse::syntax
-{
-	expression();
-	expression(tokenizer &tokens, int level = 0, void *data = NULL);
-	~expression();
-
-	void init();
-
-	vector<argument> arguments;
-	vector<string> operations;
-
-	int level;
-
-	static vector<operation_set> precedence;
-	static int get_level(string operation);
-	static bool level_has(int level, string operation);
-
-	void parse(tokenizer &tokens, void *data = NULL);
-	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
-	static void register_syntax(tokenizer &tokens);
-
-	string to_string(string tab = "") const;
-	string to_string(int prev_level, string tab = "") const;
-	parse::syntax *clone() const;
-};
-
-struct argument
-{
-	argument();
-	argument(expression sub);
-	argument(variable_name literal);
-	argument(string constant);
-	~argument();
-
-	expression sub;
-	variable_name literal;
-	string constant;
-
-	string to_string(int level = -1, string tab = "") const;
-};
+void setup_expressions();
 
 }
-

@@ -3,7 +3,7 @@
 namespace parse_verilog
 {
 number::number() {
-	debug_name = "number";
+	debug_name = "verilog_number";
 }
 
 number::~number() {

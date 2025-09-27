@@ -5,12 +5,12 @@
 namespace parse_verilog {
 
 assignment_statement::assignment_statement() {
-	debug_name = "assignment_statement";
+	debug_name = "verilog_assignment_statement";
 	blocking = true;
 }
 
 assignment_statement::assignment_statement(tokenizer &tokens, void *data) {
-	debug_name = "assignment_statement";
+	debug_name = "verilog_assignment_statement";
 	blocking = true;
 	parse(tokens, data);
 }
@@ -68,6 +68,7 @@ bool assignment_statement::is_next(tokenizer &tokens, int i, void *data) {
 
 void assignment_statement::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<assignment_statement>()) {
+		setup_expressions();
 		tokens.register_syntax<assignment_statement>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();

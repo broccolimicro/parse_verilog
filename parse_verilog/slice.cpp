@@ -15,28 +15,28 @@ namespace parse_verilog
 {
 slice::slice()
 {
-	debug_name = "slice";
+	debug_name = "verilog_slice";
 }
 
 slice::slice(int lo, int hi) {
-	debug_name = "slice";
+	debug_name = "verilog_slice";
 	valid = true;
 	expression loExpr;
 	loExpr.valid = true;
-	loExpr.arguments.push_back(::to_string(lo));
+	loExpr.arguments.push_back(argument::constantOf(::to_string(lo)));
 
 	lower = shared_ptr<parse::syntax>(new expression(loExpr));
 	if (hi > lo) {
 		expression hiExpr;
 		hiExpr.valid = true;
-		hiExpr.arguments.push_back(::to_string(hi));
+		hiExpr.arguments.push_back(argument::constantOf(::to_string(hi)));
 		upper = shared_ptr<parse::syntax>(new expression(hiExpr));
 	}
 }
 
 slice::slice(tokenizer &tokens, void *data)
 {
-	debug_name = "slice";
+	debug_name = "verilog_slice";
 	parse(tokens, data);
 }
 
@@ -90,10 +90,9 @@ bool slice::is_next(tokenizer &tokens, int i, void *data)
 	return tokens.is_next("[", i);
 }
 
-void slice::register_syntax(tokenizer &tokens)
-{
-	if (!tokens.syntax_registered<slice>())
-	{
+void slice::register_syntax(tokenizer &tokens) {
+	if (!tokens.syntax_registered<slice>()) {
+		setup_expressions();
 		tokens.register_syntax<slice>();
 		tokens.register_token<parse::number>();
 		tokens.register_token<parse::symbol>();

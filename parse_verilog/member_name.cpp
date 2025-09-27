@@ -12,11 +12,11 @@ namespace parse_verilog
 {
 member_name::member_name()
 {
-	debug_name = "member_name";
+	debug_name = "verilog_member_name";
 }
 
 member_name::member_name(ucs::Field field) {
-	debug_name = "member_name";
+	debug_name = "verilog_member_name";
 	valid = true;
 	name = field.name;
 	for (int i = 0; i < (int)field.slice.size(); i++) {
@@ -26,7 +26,7 @@ member_name::member_name(ucs::Field field) {
 
 member_name::member_name(tokenizer &tokens, void *data)
 {
-	debug_name = "member_name";
+	debug_name = "verilog_member_name";
 	parse(tokens, data);
 }
 

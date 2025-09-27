@@ -10,11 +10,11 @@
 namespace parse_verilog {
 
 if_statement::if_statement() {
-	debug_name = "if_statement";
+	debug_name = "verilog_if_statement";
 }
 
 if_statement::if_statement(tokenizer &tokens, void *data) {
-	debug_name = "if_statement";
+	debug_name = "verilog_if_statement";
 	parse(tokens, data);
 }
 

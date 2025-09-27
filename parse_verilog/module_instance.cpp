@@ -26,13 +26,13 @@ string port_connection::to_string(string tab) const {
 
 // Module instance implementation
 module_instance::module_instance() {
-	debug_name = "module_instance";
+	debug_name = "verilog_module_instance";
 	module_type = "";
 	instance_name = "";
 }
 
 module_instance::module_instance(tokenizer &tokens, void *data) {
-	debug_name = "module_instance";
+	debug_name = "verilog_module_instance";
 	module_type = "";
 	instance_name = "";
 	parse(tokens, data);
@@ -144,6 +144,7 @@ bool module_instance::is_next(tokenizer &tokens, int i, void *data) {
 
 void module_instance::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<module_instance>()) {
+		setup_expressions();
 		tokens.register_syntax<module_instance>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();

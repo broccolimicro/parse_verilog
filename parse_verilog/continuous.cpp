@@ -5,11 +5,11 @@
 namespace parse_verilog {
 
 continuous::continuous() {
-	debug_name = "continuous";
+	debug_name = "verilog_continuous";
 }
 
 continuous::continuous(tokenizer &tokens, void *data) {
-	debug_name = "continuous";
+	debug_name = "verilog_continuous";
 	parse(tokens, data);
 }
 

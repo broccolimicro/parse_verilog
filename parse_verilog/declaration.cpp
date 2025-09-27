@@ -5,7 +5,7 @@
 namespace parse_verilog {
 
 declaration::declaration() {
-	debug_name = "declaration";
+	debug_name = "verilog_declaration";
 	name = "";
 	input = false;
 	output = false;
@@ -13,7 +13,7 @@ declaration::declaration() {
 }
 
 declaration::declaration(tokenizer &tokens, void *data) {
-	debug_name = "declaration";
+	debug_name = "verilog_declaration";
 	name = "";
 	input = false;
 	output = false;
@@ -157,6 +157,7 @@ bool declaration::is_next(tokenizer &tokens, int i, void *data) {
 
 void declaration::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<declaration>()) {
+		setup_expressions();
 		tokens.register_syntax<declaration>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();

@@ -11,11 +11,11 @@
 namespace parse_verilog {
 
 trigger::trigger() {
-	debug_name = "trigger";
+	debug_name = "verilog_trigger";
 }
 
 trigger::trigger(tokenizer &tokens, void *data) {
-	debug_name = "trigger";
+	debug_name = "verilog_trigger";
 	parse(tokens, data);
 }
 
@@ -93,6 +93,7 @@ bool trigger::is_next(tokenizer &tokens, int i, void *data) {
 
 void trigger::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<trigger>()) {
+		setup_expressions();
 		tokens.register_syntax<trigger>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();

@@ -7,11 +7,11 @@
 namespace parse_verilog {
 
 loop_statement::loop_statement() {
-	debug_name = "loop_statement";
+	debug_name = "verilog_loop_statement";
 }
 
 loop_statement::loop_statement(tokenizer &tokens, void *data) {
-	debug_name = "loop_statement";
+	debug_name = "verilog_loop_statement";
 	parse(tokens, data);
 }
 
@@ -105,6 +105,7 @@ bool loop_statement::is_next(tokenizer &tokens, int i, void *data) {
 
 void loop_statement::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<loop_statement>()) {
+		setup_expressions();
 		tokens.register_syntax<loop_statement>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();

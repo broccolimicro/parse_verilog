@@ -10,11 +10,11 @@
 namespace parse_verilog {
 
 block_statement::block_statement() {
-	debug_name = "block_statement";
+	debug_name = "verilog_block_statement";
 }
 
 block_statement::block_statement(tokenizer &tokens, void *data) {
-	debug_name = "block_statement";
+	debug_name = "verilog_block_statement";
 	parse(tokens, data);
 }
 

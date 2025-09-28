@@ -4,6 +4,8 @@
 
 namespace parse_verilog {
 
+int assignment_statement::lvalueLevel = 0;
+
 assignment_statement::assignment_statement() {
 	debug_name = "verilog_assignment_statement";
 	blocking = true;
@@ -32,10 +34,11 @@ void assignment_statement::parse(tokenizer &tokens, void *data) {
 
 	// Parse left-hand side (target)
 	tokens.increment(true);
-	tokens.expect<variable_name>();
+	tokens.expect<expression>();
 
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
-		name.parse(tokens, data);
+		lvalue.level = lvalueLevel;
+		lvalue.parse(tokens, data);
 	}
 
 	if (tokens.decrement(__FILE__, __LINE__, data)) {
@@ -62,7 +65,7 @@ bool assignment_statement::is_next(tokenizer &tokens, int i, void *data) {
 		and not tokens.is_next("for", i)
 		and not tokens.is_next("module", i)
 		and not tokens.is_next("endmodule", i)
-		and variable_name::is_next(tokens, i);
+		and expression::is_next(tokens, i);
 	//return tokens.is_next("<=", i+1) or tokens.is_next("=", i+1);
 }
 
@@ -74,7 +77,6 @@ void assignment_statement::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::instance>();
 		
 		// Register components
-		variable_name::register_syntax(tokens);
 		expression::register_syntax(tokens);
 	}
 }
@@ -84,7 +86,7 @@ string assignment_statement::to_string(string tab) const {
 		return "";
 	}
 	
-	return name.to_string(tab) + (blocking ? " = " : " <= ")  + expr.to_string(tab);
+	return lvalue.to_string(tab) + (blocking ? " = " : " <= ")  + expr.to_string(tab);
 }
 
 parse::syntax *assignment_statement::clone() const {

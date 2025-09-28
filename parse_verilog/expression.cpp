@@ -1,5 +1,6 @@
 #include "expression.h"
 #include <parse_expression/precedence.h>
+#include <parse_verilog/assignment_statement.h>
 
 namespace parse_verilog {
 
@@ -86,7 +87,9 @@ void setup_expressions() {
 		result.push_back("", "::", "", "");
 		
 		expression::register_precedence(result);
-		assignment::lvalueLevel = result.size()-2;
+		size_t lvalueLevel = result.size()-2;
+		assignment::lvalueLevel = lvalueLevel;
+		assignment_statement::lvalueLevel = lvalueLevel;
 	}
 }
 

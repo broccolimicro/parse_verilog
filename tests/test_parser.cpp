@@ -106,7 +106,7 @@ endmodule)";
 		EXPECT_TRUE(dynamic_cast<continuous*>(item.get()) != nullptr);
 		
 		continuous* assign_stmt = dynamic_cast<continuous*>(item.get());
-		EXPECT_EQ(assign_stmt->assign.name.to_string(), "c");
+		EXPECT_EQ(assign_stmt->assign.lvalue.to_string(), "c");
 		EXPECT_TRUE(assign_stmt->assign.expr.valid);
 	}
 
@@ -299,17 +299,17 @@ endmodule)";
 		// First assignment (sum)
 		shared_ptr<parse::syntax> item1 = dut.items[0];
 		EXPECT_TRUE(dynamic_cast<continuous*>(item1.get()) != nullptr);
-		EXPECT_EQ(dynamic_cast<continuous*>(item1.get())->assign.name.to_string(), "sum");
+		EXPECT_EQ(dynamic_cast<continuous*>(item1.get())->assign.lvalue.to_string(), "sum");
 		
 		// Second assignment (diff)
 		shared_ptr<parse::syntax> item2 = dut.items[1];
 		EXPECT_TRUE(dynamic_cast<continuous*>(item2.get()) != nullptr);
-		EXPECT_EQ(dynamic_cast<continuous*>(item2.get())->assign.name.to_string(), "diff");
+		EXPECT_EQ(dynamic_cast<continuous*>(item2.get())->assign.lvalue.to_string(), "diff");
 		
 		// Third assignment (product)
 		shared_ptr<parse::syntax> item3 = dut.items[2];
 		EXPECT_TRUE(dynamic_cast<continuous*>(item3.get()) != nullptr);
-		EXPECT_EQ(dynamic_cast<continuous*>(item3.get())->assign.name.to_string(), "product");
+		EXPECT_EQ(dynamic_cast<continuous*>(item3.get())->assign.lvalue.to_string(), "product");
 	}
 
 	//cout << dut.to_string("") << endl << verilog_code << endl;
@@ -367,10 +367,10 @@ endmodule)";
 			EXPECT_TRUE(for_ptr->body.valid);
 			
 			// Check that initialization is "i = 0"
-			EXPECT_EQ(for_ptr->init.name.to_string(), "i");
+			EXPECT_EQ(for_ptr->init.lvalue.to_string(), "i");
 			
 			// Check that step is "i = i + 1"
-			EXPECT_EQ(for_ptr->step.name.to_string(), "i");
+			EXPECT_EQ(for_ptr->step.lvalue.to_string(), "i");
 		}
 	}
 

@@ -3,7 +3,6 @@
 #include <parse/parse.h>
 #include <parse/syntax.h>
 
-#include <parse_verilog/variable_name.h>
 #include <parse_verilog/assignment_statement.h>
 
 #include <string>
@@ -18,7 +17,7 @@ struct continuous : parse::syntax {
 	~continuous();
 
 	bool force;
-	variable_name deassign;
+	expression deassign;
 	assignment_statement assign;
 	
 	void parse(tokenizer &tokens, void *data = nullptr);

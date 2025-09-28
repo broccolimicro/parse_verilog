@@ -37,9 +37,10 @@ void continuous::parse(tokenizer &tokens, void *data) {
 			}
 		} else {
 			tokens.increment(true);
-			tokens.expect<variable_name>();
+			tokens.expect<expression>();
 
 			if (tokens.decrement(__FILE__, __LINE__, data)) {
+				deassign.level = assignment_statement::lvalueLevel;
 				deassign.parse(tokens, data);
 			}
 		}
@@ -55,12 +56,13 @@ bool continuous::is_next(tokenizer &tokens, int i, void *data) {
 
 void continuous::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<continuous>()) {
+		setup_expressions();
 		tokens.register_syntax<continuous>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();
 		
 		// Register components
-		variable_name::register_syntax(tokens);
+		expression::register_syntax(tokens);
 		assignment_statement::register_syntax(tokens);
 	}
 }

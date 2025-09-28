@@ -4,7 +4,6 @@
 #include <parse/syntax.h>
 
 #include <parse_verilog/expression.h>
-#include <parse_verilog/variable_name.h>
 
 #include <string>
 
@@ -17,8 +16,10 @@ struct assignment_statement : parse::syntax {
 	assignment_statement(tokenizer &tokens, void *data = nullptr);
 	~assignment_statement();
 
+	static int lvalueLevel;
+
 	// The left side (target) of the assignment_statementment
-	variable_name name;
+	expression lvalue;
 
 	bool blocking;
 	

@@ -15,4 +15,10 @@ void register_syntax(tokenizer &tokens) {
 	module_def::register_syntax(tokens);
 }
 
+const parse::factory factory{
+	register_syntax,
+	expect,
+	produce
+};
+
 } 

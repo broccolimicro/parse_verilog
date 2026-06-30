@@ -97,8 +97,11 @@ void block_statement::register_syntax(tokenizer &tokens) {
 	}
 }
 
-
 std::string block_statement::to_string(std::string tab) const {
+	return to_string(tab, false);
+}
+
+std::string block_statement::to_string(std::string tab, bool bookend) const {
 	string result;
 
 	if (!valid) {
@@ -106,13 +109,13 @@ std::string block_statement::to_string(std::string tab) const {
 	}
 
 	string next = tab;
-	if (sub.size() != 1u) {
+	if (sub.size() != 1u or bookend) {
 		result += "begin\n";
 		next += "\t";
 	}
 
 	for (int i = 0; i < (int)sub.size(); i++) {
-		if (i != 0 or sub.size() > 1u) {
+		if (i != 0 or sub.size() > 1u or bookend) {
 			result += next;
 		}
 		result += sub[i]->to_string(next);
@@ -122,7 +125,7 @@ std::string block_statement::to_string(std::string tab) const {
 		result += "\n";
 	}
 
-	if (sub.size() != 1u) {
+	if (sub.size() != 1u or bookend) {
 		result += tab + "end";
 	}
 	

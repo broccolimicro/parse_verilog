@@ -127,11 +127,12 @@ string if_statement::to_string(string tab) const {
 			result += "if (" + condition[i].to_string(tab) + ")";
 		}
 
-		if (body[i].sub.size() == 1u) {
+		/*if (body[i].sub.size() == 1u) {
 			result += "\n" + tab + "\t" + body[i].to_string(tab+"\t");
 		} else {
 			result += " " + body[i].to_string(tab);
-		}
+		}*/
+		result += " " + body[i].to_string(tab, true);
 	}
 
 	return result;

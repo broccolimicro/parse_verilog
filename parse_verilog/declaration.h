@@ -11,7 +11,7 @@ namespace parse_verilog {
 
 struct declaration : parse::syntax {
 	declaration();
-	declaration(tokenizer &tokens, void *data = nullptr);
+	declaration(tokenizer &tokens, std::any data=std::any());
 	~declaration();
 
 	bool input;
@@ -26,8 +26,8 @@ struct declaration : parse::syntax {
 	
 	vector<array<expression, 2> > size;
 
-	void parse(tokenizer &tokens, void *data = nullptr);
-	static bool is_next(tokenizer &tokens, int i = 1, void *data = nullptr);
+	void parse(tokenizer &tokens, std::any data=std::any());
+	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
 	static void register_syntax(tokenizer &tokens);
 
 	std::string to_string(std::string tab = "") const override;

@@ -13,7 +13,7 @@ if_statement::if_statement() {
 	debug_name = "verilog_if_statement";
 }
 
-if_statement::if_statement(tokenizer &tokens, void *data) {
+if_statement::if_statement(tokenizer &tokens, std::any data) {
 	debug_name = "verilog_if_statement";
 	parse(tokens, data);
 }
@@ -21,7 +21,7 @@ if_statement::if_statement(tokenizer &tokens, void *data) {
 if_statement::~if_statement() {
 }
 
-void if_statement::parse(tokenizer &tokens, void *data) {
+void if_statement::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	bool first = true;
@@ -43,7 +43,7 @@ void if_statement::parse(tokenizer &tokens, void *data) {
 		first = false;
 		
 		last = true;
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 			last = false;
 
@@ -53,26 +53,27 @@ void if_statement::parse(tokenizer &tokens, void *data) {
 
 			// Parse condition
 			tokens.increment(true);
-			tokens.expect<expression>();
+			expression::expect(tokens);
 
 			// Expect opening parenthesis
 			tokens.increment(true);
 			tokens.expect("(");
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 			}
 			
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
-				condition.push_back(expression(tokens, 0, data));
+			if (tokens.decrement(__FILE__, __LINE__)) {
+				condition.push_back(expression());
+				condition.back().parse(tokens);
 			}
 			
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 			}
 		}
 		
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			body.push_back(block_statement());
 			body.back().parse(tokens, data);
 		}
@@ -81,12 +82,12 @@ void if_statement::parse(tokenizer &tokens, void *data) {
 			tokens.increment(false);
 			tokens.expect("else");
 		}
-	} while (not last and tokens.decrement(__FILE__, __LINE__, data));
+	} while (not last and tokens.decrement(__FILE__, __LINE__));
 	
 	tokens.syntax_end(this);
 }
 
-bool if_statement::is_next(tokenizer &tokens, int i, void *data) {
+bool if_statement::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("if", i);
 }
 

@@ -16,7 +16,7 @@ module_def::module_def() {
 	name = "";
 }
 
-module_def::module_def(tokenizer &tokens, void *data) {
+module_def::module_def(tokenizer &tokens, std::any data) {
 	debug_name = "verilog_module";
 	name = "";
 	parse(tokens, data);
@@ -25,7 +25,7 @@ module_def::module_def(tokenizer &tokens, void *data) {
 module_def::~module_def() {
 }
 
-void module_def::parse(tokenizer &tokens, void *data) {
+void module_def::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(true);
@@ -56,27 +56,27 @@ void module_def::parse(tokenizer &tokens, void *data) {
 	tokens.expect("module");
 
 	// "module"
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
 	// "mymodule"
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		name = tokens.next();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		ports.push_back(declaration(tokens, data));
 
 		tokens.increment(false);
 		tokens.expect(",");
 
 		// "(port, port, ..., port"
-		while (tokens.decrement(__FILE__, __LINE__, data)) {
+		while (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 
 			tokens.increment(false);
@@ -85,31 +85,31 @@ void module_def::parse(tokenizer &tokens, void *data) {
 			tokens.increment(true);
 			tokens.expect<declaration>();
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				ports.push_back(declaration(tokens, data));
 			}
 		}
 	}
 	
 	// ")"
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 	
 	// Parse semicolon after port list
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 	
 	// Parse module items
-	while (tokens.decrement(__FILE__, __LINE__, data)) {
+	while (tokens.decrement(__FILE__, __LINE__)) {
 		if (tokens.found<declaration>()) {
 			items.push_back(shared_ptr<parse::syntax>(new declaration(tokens, data)));
 
 			tokens.increment(true);
 			tokens.expect(";");
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 			}
 		} else if (tokens.found<continuous>()) {
@@ -118,7 +118,7 @@ void module_def::parse(tokenizer &tokens, void *data) {
 			tokens.increment(true);
 			tokens.expect(";");
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 			}
 		} else if (tokens.found<trigger>()) {
@@ -135,14 +135,14 @@ void module_def::parse(tokenizer &tokens, void *data) {
 	}
 	
 	// Parse endmodule
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 
 	tokens.syntax_end(this);
 }
 
-bool module_def::is_next(tokenizer &tokens, int i, void *data) {
+bool module_def::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("module", i);
 }
 

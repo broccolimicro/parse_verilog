@@ -8,7 +8,7 @@ continuous::continuous() {
 	debug_name = "verilog_continuous";
 }
 
-continuous::continuous(tokenizer &tokens, void *data) {
+continuous::continuous(tokenizer &tokens, std::any data) {
 	debug_name = "verilog_continuous";
 	parse(tokens, data);
 }
@@ -16,7 +16,7 @@ continuous::continuous(tokenizer &tokens, void *data) {
 continuous::~continuous() {
 }
 
-void continuous::parse(tokenizer &tokens, void *data) {
+void continuous::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(true);
@@ -25,23 +25,22 @@ void continuous::parse(tokenizer &tokens, void *data) {
 	tokens.expect("deassign");
 	tokens.expect("release");
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		string type = tokens.next();
 		force = (type == "force" or type == "release");
 		if (type == "assign" or type == "force") {
 			tokens.increment(true);
 			tokens.expect<assignment_statement>();
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				assign.parse(tokens, data);
 			}
 		} else {
 			tokens.increment(true);
-			tokens.expect<expression>();
+			expression::expectl(tokens);
 
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
-				deassign.level = assignment_statement::lvalueLevel;
-				deassign.parse(tokens, data);
+			if (tokens.decrement(__FILE__, __LINE__)) {
+				deassign.parsel(tokens);
 			}
 		}
 	}
@@ -49,14 +48,13 @@ void continuous::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_end(this);
 }
 
-bool continuous::is_next(tokenizer &tokens, int i, void *data) {
+bool continuous::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("assign", i) or tokens.is_next("force", i)
 		or tokens.is_next("deassign", i) or tokens.is_next("release", i);
 }
 
 void continuous::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<continuous>()) {
-		setup_expressions();
 		tokens.register_syntax<continuous>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();

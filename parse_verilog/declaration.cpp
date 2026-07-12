@@ -12,7 +12,7 @@ declaration::declaration() {
 	type = "wire";
 }
 
-declaration::declaration(tokenizer &tokens, void *data) {
+declaration::declaration(tokenizer &tokens, std::any data) {
 	debug_name = "verilog_declaration";
 	name = "";
 	input = false;
@@ -24,7 +24,7 @@ declaration::declaration(tokenizer &tokens, void *data) {
 declaration::~declaration() {
 }
 
-void declaration::parse(tokenizer &tokens, void *data) {
+void declaration::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(false);
@@ -47,20 +47,20 @@ void declaration::parse(tokenizer &tokens, void *data) {
 	tokens.expect("output");
 	tokens.expect("inout");
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		string dir = tokens.next();
 		input = (dir == "input" or dir == "inout");
 		output = (dir == "output" or dir == "inout");
 	}
 
 	type = "wire";
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		type = tokens.next();
 	}
 
 	// Check for vector dimensions before the name
 	// This handles case like: input [7:0] data
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 
 		// Expect closing bracket
@@ -69,7 +69,7 @@ void declaration::parse(tokenizer &tokens, void *data) {
 
 		// Parse LSB expression
 		tokens.increment(true);
-		tokens.expect<expression>();
+		expression::expect(tokens);
 
 		// Expect colon
 		tokens.increment(true);
@@ -77,32 +77,32 @@ void declaration::parse(tokenizer &tokens, void *data) {
 
 		// Parse MSB expression
 		tokens.increment(true);
-		tokens.expect<expression>();
+		expression::expect(tokens);
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			msb.parse(tokens, data);
+		if (tokens.decrement(__FILE__, __LINE__)) {
+			msb.parse(tokens);
 		}
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 		}
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			lsb.parse(tokens, data);
+		if (tokens.decrement(__FILE__, __LINE__)) {
+			lsb.parse(tokens);
 		}
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 		}
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		name = tokens.next();
 	}
 
 	// Check for vector dimensions after the name
 	// This handles cases like: input data [7:0]
-	while (tokens.decrement(__FILE__, __LINE__, data)) {
+	while (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 
 		tokens.increment(false);
@@ -114,7 +114,7 @@ void declaration::parse(tokenizer &tokens, void *data) {
 
 		// Parse LSB expression
 		tokens.increment(true);
-		tokens.expect<expression>();
+		expression::expect(tokens);
 
 		// Expect colon
 		tokens.increment(true);
@@ -122,23 +122,23 @@ void declaration::parse(tokenizer &tokens, void *data) {
 
 		// Parse MSB expression
 		tokens.increment(true);
-		tokens.expect<expression>();
+		expression::expect(tokens);
 
 		size.push_back(array<expression, 2>());
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			size.back()[0].parse(tokens, data);
+		if (tokens.decrement(__FILE__, __LINE__)) {
+			size.back()[0].parse(tokens);
 		}
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 		}
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
-			size.back()[1].parse(tokens, data);
+		if (tokens.decrement(__FILE__, __LINE__)) {
+			size.back()[1].parse(tokens);
 		}
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next();
 		}
 	}
@@ -146,7 +146,7 @@ void declaration::parse(tokenizer &tokens, void *data) {
 	tokens.syntax_end(this);
 }
 
-bool declaration::is_next(tokenizer &tokens, int i, void *data) {
+bool declaration::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("input", i) or
 		tokens.is_next("output", i) or
 		tokens.is_next("inout", i) or
@@ -157,7 +157,6 @@ bool declaration::is_next(tokenizer &tokens, int i, void *data) {
 
 void declaration::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<declaration>()) {
-		setup_expressions();
 		tokens.register_syntax<declaration>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();

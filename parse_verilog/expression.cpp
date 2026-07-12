@@ -1,96 +1,103 @@
 #include "expression.h"
 #include <parse_expression/precedence.h>
-#include <parse_verilog/assignment_statement.h>
+#include <parse_expression/literal.h>
+#include <parse/wrapper.h>
+#include "number.h"
 
 namespace parse_verilog {
 
-using parse_expression::precedence_set;
-using parse_expression::operation_set;
+parse_expression::config makeExprConfig() {
+	parse_expression::config cfg;
+	int CONSTANT = cfg.push<parse::wrapper<number> >();
+	int LITERAL = cfg.push<parse::wrapper<parse::instance> >();
 
-void setup_expressions() {
-	if (expression::precedence.empty()) {
-		precedence_set result;
-		result.push(operation_set::BINARY);
-		result.push_back("", "", "or", "");
-		result.push_back("", "", ",", "");
+	cfg.base = {LITERAL, CONSTANT};
 
-		result.push(operation_set::UNARY);
-		result.push_back("posedge", "", "", "");
-		result.push_back("negedge", "", "", "");
+	using operation_set=parse_expression::operation_set;
 
-		result.push(operation_set::BINARY);
-		result.push_back("", "", "||", "");
-		
-		result.push(operation_set::BINARY);
-		result.push_back("", "", "&&", "");
+	cfg.order.push(operation_set::BINARY);
+	cfg.order.push_back("", "", "or", "");
+	cfg.order.push_back("", "", ",", "");
 
-		result.push(operation_set::BINARY);
-		result.push_back("", "", "|", "");
+	cfg.order.push(operation_set::UNARY);
+	cfg.order.push_back("posedge", "", "", "");
+	cfg.order.push_back("negedge", "", "", "");
 
-		result.push(operation_set::BINARY);
-		result.push_back("", "", "^", "");
-		result.push_back("", "", "~^", "");
-		result.push_back("", "", "^~", "");
+	cfg.order.push(operation_set::BINARY);
+	cfg.order.push_back("", "", "||", "");
+	
+	cfg.order.push(operation_set::BINARY);
+	cfg.order.push_back("", "", "&&", "");
 
-		result.push(operation_set::BINARY);
-		result.push_back("", "", "&", "");
+	cfg.order.push(operation_set::BINARY);
+	cfg.order.push_back("", "", "|", "");
 
-		result.push(operation_set::BINARY);
-		result.push_back("", "", "==", "");
-		result.push_back("", "", "!=", "");
-		result.push_back("", "", "===", "");
-		result.push_back("", "", "!==", "");
+	cfg.order.push(operation_set::BINARY);
+	cfg.order.push_back("", "", "^", "");
+	cfg.order.push_back("", "", "~^", "");
+	cfg.order.push_back("", "", "^~", "");
 
-		result.push(operation_set::BINARY);
-		result.push_back("", "", "<", "");
-		result.push_back("", "", ">", "");
-		result.push_back("", "", "<=", "");
-		result.push_back("", "", ">=", "");
+	cfg.order.push(operation_set::BINARY);
+	cfg.order.push_back("", "", "&", "");
 
-		result.push(operation_set::BINARY);
-		result.push_back("", "", "<<", "");
-		result.push_back("", "", ">>", "");
-		result.push_back("", "", "<<<", "");
-		result.push_back("", "", ">>>", "");
+	cfg.order.push(operation_set::BINARY);
+	cfg.order.push_back("", "", "==", "");
+	cfg.order.push_back("", "", "!=", "");
+	cfg.order.push_back("", "", "===", "");
+	cfg.order.push_back("", "", "!==", "");
 
-		result.push(operation_set::BINARY);
-		result.push_back("", "", "+", "");
-		result.push_back("", "", "-", "");
+	cfg.order.push(operation_set::BINARY);
+	cfg.order.push_back("", "", "<", "");
+	cfg.order.push_back("", "", ">", "");
+	cfg.order.push_back("", "", "<=", "");
+	cfg.order.push_back("", "", ">=", "");
 
-		result.push(operation_set::BINARY);
-		result.push_back("", "", "*", "");
-		result.push_back("", "", "/", "");
-		result.push_back("", "", "%", "");
+	cfg.order.push(operation_set::BINARY);
+	cfg.order.push_back("", "", "<<", "");
+	cfg.order.push_back("", "", ">>", "");
+	cfg.order.push_back("", "", "<<<", "");
+	cfg.order.push_back("", "", ">>>", "");
 
-		result.push(operation_set::BINARY);
-		result.push_back("", "", "**", "");
+	cfg.order.push(operation_set::BINARY);
+	cfg.order.push_back("", "", "+", "");
+	cfg.order.push_back("", "", "-", "");
 
-		result.push(operation_set::UNARY);
-		result.push_back("+", "", "", "");
-		result.push_back("-", "", "", "");
-		result.push_back("!", "", "", "");
-		result.push_back("~", "", "", "");
-		result.push_back("&", "", "", "");
-		result.push_back("~&", "", "", "");
-		result.push_back("|", "", "", "");
-		result.push_back("~|", "", "", "");
-		result.push_back("^", "", "", "");
-		result.push_back("~^", "", "", "");
-		result.push_back("^~", "", "", "");
+	cfg.order.push(operation_set::BINARY);
+	cfg.order.push_back("", "", "*", "");
+	cfg.order.push_back("", "", "/", "");
+	cfg.order.push_back("", "", "%", "");
 
-		result.push(operation_set::MODIFIER);
-		result.push_back("$", "(", ",", ")");
-		result.push_back("", ".", "", "");
-		result.push_back("", "[", ":", "]");
-		
-		result.push(operation_set::MODIFIER);
-		result.push_back("", "::", "", "");
-		
-		expression::register_precedence(result);
-		size_t lvalueLevel = result.size()-2;
-		assignment::lvalueLevel = lvalueLevel;
-		assignment_statement::lvalueLevel = lvalueLevel;
-	}
+	cfg.order.push(operation_set::BINARY);
+	cfg.order.push_back("", "", "**", "");
+
+	cfg.order.push(operation_set::UNARY);
+	cfg.order.push_back("+", "", "", "");
+	cfg.order.push_back("-", "", "", "");
+	cfg.order.push_back("!", "", "", "");
+	cfg.order.push_back("~", "", "", "");
+	cfg.order.push_back("&", "", "", "");
+	cfg.order.push_back("~&", "", "", "");
+	cfg.order.push_back("|", "", "", "");
+	cfg.order.push_back("~|", "", "", "");
+	cfg.order.push_back("^", "", "", "");
+	cfg.order.push_back("~^", "", "", "");
+	cfg.order.push_back("^~", "", "", "");
+
+	cfg.order.push(operation_set::MODIFIER);
+	cfg.order.push_back("$", "(", ",", ")");
+	cfg.order.push_back("", ".", "", "");
+	cfg.order.push_back("", "[", ":", "]");
+	
+	cfg.order.push(operation_set::MODIFIER);
+	cfg.order.push_back("", "::", "", "");
+	
+	cfg.lvalueLevel = cfg.order.size()-2;
+
+	return cfg;
 }
+
+template <>
+std::shared_ptr<parse_expression::config> expression::cfg = 
+	std::make_shared<parse_expression::config>(parse_verilog::makeExprConfig());
 
 }

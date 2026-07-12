@@ -10,7 +10,7 @@ loop_statement::loop_statement() {
 	debug_name = "verilog_loop_statement";
 }
 
-loop_statement::loop_statement(tokenizer &tokens, void *data) {
+loop_statement::loop_statement(tokenizer &tokens, std::any data) {
 	debug_name = "verilog_loop_statement";
 	parse(tokens, data);
 }
@@ -18,7 +18,7 @@ loop_statement::loop_statement(tokenizer &tokens, void *data) {
 loop_statement::~loop_statement() {
 }
 
-void loop_statement::parse(tokenizer &tokens, void *data) {
+void loop_statement::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	// Push tokens in reverse order of their appearance in source code
@@ -41,7 +41,7 @@ void loop_statement::parse(tokenizer &tokens, void *data) {
 	
 	// Parse condition
 	tokens.increment(false);
-	tokens.expect<expression>();
+	expression::expect(tokens);
 	
 	// Parse first semicolon
 	tokens.increment(true);
@@ -60,52 +60,51 @@ void loop_statement::parse(tokenizer &tokens, void *data) {
 	tokens.expect("for");
 
 	// Process tokens in correct order (as they appear in source)
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next(); // for
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next(); // (
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		init.parse(tokens, data);
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next(); // ;
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		cond.parse(tokens, data);
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next(); // ;
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		step.parse(tokens, data);
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next(); // )
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		body.parse(tokens, data);
 	}
 
 	tokens.syntax_end(this);
 }
 
-bool loop_statement::is_next(tokenizer &tokens, int i, void *data) {
+bool loop_statement::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("for", i);
 }
 
 void loop_statement::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<loop_statement>()) {
-		setup_expressions();
 		tokens.register_syntax<loop_statement>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();

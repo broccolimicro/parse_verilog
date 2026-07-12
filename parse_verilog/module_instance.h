@@ -22,7 +22,7 @@ struct port_connection {
 
 struct module_instance : parse::syntax {
 	module_instance();
-	module_instance(tokenizer &tokens, void *data = nullptr);
+	module_instance(tokenizer &tokens, std::any data=std::any());
 	~module_instance();
 
 	string module_type;  // Type of the module being instantiated
@@ -30,8 +30,8 @@ struct module_instance : parse::syntax {
 	
 	vector<port_connection> connections; // Port connections
 
-	void parse(tokenizer &tokens, void *data = nullptr);
-	static bool is_next(tokenizer &tokens, int i = 1, void *data = nullptr);
+	void parse(tokenizer &tokens, std::any data=std::any());
+	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
 	static void register_syntax(tokenizer &tokens);
 
 	string to_string(string tab = "") const;

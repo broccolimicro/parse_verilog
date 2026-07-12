@@ -15,14 +15,14 @@ namespace parse_verilog {
 
 struct if_statement : parse::syntax {
 	if_statement();
-	if_statement(tokenizer &tokens, void *data = nullptr);
+	if_statement(tokenizer &tokens, std::any data=std::any());
 	~if_statement();
 
 	vector<expression> condition;
 	vector<block_statement> body;
 
-	void parse(tokenizer &tokens, void *data = nullptr);
-	static bool is_next(tokenizer &tokens, int i = 1, void *data = nullptr);
+	void parse(tokenizer &tokens, std::any data=std::any());
+	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
 	static void register_syntax(tokenizer &tokens);
 
 	string to_string(string tab = "") const;

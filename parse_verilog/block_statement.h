@@ -13,13 +13,13 @@ namespace parse_verilog {
 
 struct block_statement : parse::syntax {
     block_statement();
-    block_statement(tokenizer &tokens, void *data = nullptr);
+    block_statement(tokenizer &tokens, std::any data=std::any());
     ~block_statement();
 
     vector<shared_ptr<parse::syntax> > sub;
 
-    void parse(tokenizer &tokens, void *data = nullptr);
-    static bool is_next(tokenizer &tokens, int i = 1, void *data = nullptr);
+    void parse(tokenizer &tokens, std::any data=std::any());
+    static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
 		static void register_syntax(tokenizer &tokens);
 
     string to_string(string tab = "") const;

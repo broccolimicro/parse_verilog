@@ -14,7 +14,7 @@ trigger::trigger() {
 	debug_name = "verilog_trigger";
 }
 
-trigger::trigger(tokenizer &tokens, void *data) {
+trigger::trigger(tokenizer &tokens, std::any data) {
 	debug_name = "verilog_trigger";
 	parse(tokens, data);
 }
@@ -22,7 +22,7 @@ trigger::trigger(tokenizer &tokens, void *data) {
 trigger::~trigger() {
 }
 
-void trigger::parse(tokenizer &tokens, void *data) {
+void trigger::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(true);
@@ -38,7 +38,7 @@ void trigger::parse(tokenizer &tokens, void *data) {
 
 	bool always = false;
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		always = (tokens.next() == "always");
 	}
 
@@ -47,7 +47,7 @@ void trigger::parse(tokenizer &tokens, void *data) {
 		tokens.expect(")");
 
 		tokens.increment(true);
-		tokens.expect<expression>();
+		expression::expect(tokens);
 		tokens.expect("*");
 
 		// Expect opening parenthesis
@@ -58,42 +58,41 @@ void trigger::parse(tokenizer &tokens, void *data) {
 		tokens.increment(true);
 		tokens.expect("@");
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next(); // Consume "@"
 		}
 			
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next(); // Consume "("
 		}
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			if (tokens.found("*")) {
 				tokens.next();
 				condition.valid = true;
 			} else {
-				condition.parse(tokens, data);
+				condition.parse(tokens);
 			}
 		}
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			tokens.next(); // Consume ")"
 		}
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		body.parse(tokens, data);
 	}
 
 	tokens.syntax_end(this);
 }
 
-bool trigger::is_next(tokenizer &tokens, int i, void *data) {
+bool trigger::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("always", i) or tokens.is_next("initial", i);
 }
 
 void trigger::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<trigger>()) {
-		setup_expressions();
 		tokens.register_syntax<trigger>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();

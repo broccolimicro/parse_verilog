@@ -31,7 +31,7 @@ module_instance::module_instance() {
 	instance_name = "";
 }
 
-module_instance::module_instance(tokenizer &tokens, void *data) {
+module_instance::module_instance(tokenizer &tokens, std::any data) {
 	debug_name = "verilog_module_instance";
 	module_type = "";
 	instance_name = "";
@@ -41,7 +41,7 @@ module_instance::module_instance(tokenizer &tokens, void *data) {
 module_instance::~module_instance() {
 }
 
-void module_instance::parse(tokenizer &tokens, void *data) {
+void module_instance::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	// Parse semicolon (last in source)
@@ -65,17 +65,17 @@ void module_instance::parse(tokenizer &tokens, void *data) {
 	tokens.expect<parse::instance>();
 
 	// Process tokens in correct order (as they appear in source)
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		module_type = tokens.next(); // module type
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		instance_name = tokens.next(); // instance name
 	}
 
 	// Parse all port connections
 	bool first = true;
-	while (tokens.decrement(__FILE__, __LINE__, data)) {
+	while (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next(); // ( then ,
 		
 		tokens.increment(false);
@@ -83,9 +83,9 @@ void module_instance::parse(tokenizer &tokens, void *data) {
 	
 		tokens.increment(not first);
 		tokens.expect(".");  // Named connection
-		tokens.expect<expression>();
+		expression::expect(tokens);
 
-		if (tokens.decrement(__FILE__, __LINE__, data)) {
+		if (tokens.decrement(__FILE__, __LINE__)) {
 			port_connection conn;
 			if (tokens.found(".")) {
 				tokens.next(); // .
@@ -94,7 +94,7 @@ void module_instance::parse(tokenizer &tokens, void *data) {
 				tokens.expect(")");
 		
 				tokens.increment(true);
-				tokens.expect<expression>();
+				expression::expect(tokens);
 
 				tokens.increment(true);
 				tokens.expect("(");
@@ -102,19 +102,19 @@ void module_instance::parse(tokenizer &tokens, void *data) {
 				tokens.increment(true);
 				tokens.expect<parse::instance>();
 
-				if (tokens.decrement(__FILE__, __LINE__, data)) {
+				if (tokens.decrement(__FILE__, __LINE__)) {
 					conn.port_name = tokens.next(); // port name
 				}
 				
-				if (tokens.decrement(__FILE__, __LINE__, data)) {
+				if (tokens.decrement(__FILE__, __LINE__)) {
 					tokens.next(); // (
 				}
 				
-				if (tokens.decrement(__FILE__, __LINE__, data)) {
+				if (tokens.decrement(__FILE__, __LINE__)) {
 					conn.expr.parse(tokens, data);
 				}
 				
-				if (tokens.decrement(__FILE__, __LINE__, data)) {
+				if (tokens.decrement(__FILE__, __LINE__)) {
 					tokens.next(); // )
 				}
 			} else {
@@ -126,25 +126,24 @@ void module_instance::parse(tokenizer &tokens, void *data) {
 		
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next(); // )
 	}
 
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next(); // ;
 	}
 
 	tokens.syntax_end(this);
 }
 
-bool module_instance::is_next(tokenizer &tokens, int i, void *data) {
+bool module_instance::is_next(tokenizer &tokens, int i, std::any data) {
 	// Check if token is an identifier and next token is also an identifier
 	return tokens.is_next<parse::instance>(i) and tokens.is_next<parse::instance>(i+1) and tokens.is_next("(", i+2);
 }
 
 void module_instance::register_syntax(tokenizer &tokens) {
 	if (!tokens.syntax_registered<module_instance>()) {
-		setup_expressions();
 		tokens.register_syntax<module_instance>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();

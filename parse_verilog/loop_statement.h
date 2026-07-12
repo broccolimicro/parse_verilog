@@ -13,7 +13,7 @@ namespace parse_verilog {
 
 struct loop_statement : parse::syntax {
     loop_statement();
-    loop_statement(tokenizer &tokens, void *data = nullptr);
+    loop_statement(tokenizer &tokens, std::any data=std::any());
     ~loop_statement();
 
 		assignment_statement init;
@@ -21,8 +21,8 @@ struct loop_statement : parse::syntax {
 		assignment_statement step;
     block_statement body;
 
-    void parse(tokenizer &tokens, void *data = nullptr);
-    static bool is_next(tokenizer &tokens, int i = 1, void *data = nullptr);
+    void parse(tokenizer &tokens, std::any data=std::any());
+    static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
     static void register_syntax(tokenizer &tokens);
 
     string to_string(string tab = "") const;

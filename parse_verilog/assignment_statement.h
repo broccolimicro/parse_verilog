@@ -13,10 +13,8 @@ namespace parse_verilog {
 
 struct assignment_statement : parse::syntax {
 	assignment_statement();
-	assignment_statement(tokenizer &tokens, void *data = nullptr);
+	assignment_statement(tokenizer &tokens, std::any data=std::any());
 	~assignment_statement();
-
-	static int lvalueLevel;
 
 	// The left side (target) of the assignment_statementment
 	expression lvalue;
@@ -26,8 +24,8 @@ struct assignment_statement : parse::syntax {
 	// The right side (expression) of the assignment_statementment
 	expression expr;
 
-	void parse(tokenizer &tokens, void *data = nullptr);
-	static bool is_next(tokenizer &tokens, int i = 1, void *data = nullptr);
+	void parse(tokenizer &tokens, std::any data=std::any());
+	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
 	static void register_syntax(tokenizer &tokens);
 
 	string to_string(string tab = "") const;

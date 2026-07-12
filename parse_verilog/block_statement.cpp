@@ -13,7 +13,7 @@ block_statement::block_statement() {
 	debug_name = "verilog_block_statement";
 }
 
-block_statement::block_statement(tokenizer &tokens, void *data) {
+block_statement::block_statement(tokenizer &tokens, std::any data) {
 	debug_name = "verilog_block_statement";
 	parse(tokens, data);
 }
@@ -21,14 +21,14 @@ block_statement::block_statement(tokenizer &tokens, void *data) {
 block_statement::~block_statement() {
 }
 
-void block_statement::parse(tokenizer &tokens, void *data) {
+void block_statement::parse(tokenizer &tokens, std::any data) {
 	tokens.syntax_start(this);
 
 	tokens.increment(false);
 	tokens.expect("begin");
 	
 	bool one = true;
-	if (tokens.decrement(__FILE__, __LINE__, data)) {
+	if (tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 
 		tokens.increment(true);
@@ -42,14 +42,14 @@ void block_statement::parse(tokenizer &tokens, void *data) {
 	tokens.expect<loop_statement>();
 	tokens.expect<block_statement>();
 	
-	while (tokens.decrement(__FILE__, __LINE__, data)) {
+	while (tokens.decrement(__FILE__, __LINE__)) {
 		if (tokens.found<assignment_statement>()) {
 			sub.push_back(shared_ptr<parse::syntax>(new assignment_statement(tokens, data)));
 
 			tokens.increment(true);
 			tokens.expect(";");
 			
-			if (tokens.decrement(__FILE__, __LINE__, data)) {
+			if (tokens.decrement(__FILE__, __LINE__)) {
 				tokens.next();
 			}
 		} else if (tokens.found<if_statement>()) {
@@ -72,14 +72,14 @@ void block_statement::parse(tokenizer &tokens, void *data) {
 		}
 	}
 
-	if (not one and tokens.decrement(__FILE__, __LINE__, data)) {
+	if (not one and tokens.decrement(__FILE__, __LINE__)) {
 		tokens.next();
 	}
 	
 	tokens.syntax_end(this);
 }
 
-bool block_statement::is_next(tokenizer &tokens, int i, void *data) {
+bool block_statement::is_next(tokenizer &tokens, int i, std::any data) {
 	return tokens.is_next("begin", i);
 }
 

@@ -11,7 +11,7 @@ struct number
 
 	string debug_name;
 
-	static token consume(tokenizer &tokens, void *data = NULL);
-	static bool is_next(tokenizer &tokens, int i = 1, void *data = NULL);
+	static token consume(tokenizer &tokens, std::any data=std::any());
+	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());
 };
 }

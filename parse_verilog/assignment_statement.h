@@ -17,12 +17,12 @@ struct assignment_statement : parse::syntax {
 	~assignment_statement();
 
 	// The left side (target) of the assignment_statementment
-	expression lvalue;
+	lvalue left;
 
 	bool blocking;
 	
 	// The right side (expression) of the assignment_statementment
-	expression expr;
+	rvalue expr;
 
 	void parse(tokenizer &tokens, std::any data=std::any());
 	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());

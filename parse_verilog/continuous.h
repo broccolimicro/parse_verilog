@@ -17,7 +17,7 @@ struct continuous : parse::syntax {
 	~continuous();
 
 	bool force;
-	expression deassign;
+	lvalue deassign;
 	assignment_statement assign;
 	
 	void parse(tokenizer &tokens, std::any data=std::any());

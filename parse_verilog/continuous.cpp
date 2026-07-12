@@ -37,10 +37,10 @@ void continuous::parse(tokenizer &tokens, std::any data) {
 			}
 		} else {
 			tokens.increment(true);
-			expression::expectl(tokens);
+			tokens.expect<lvalue>();
 
 			if (tokens.decrement(__FILE__, __LINE__)) {
-				deassign.parsel(tokens);
+				deassign.parse(tokens);
 			}
 		}
 	}
@@ -60,7 +60,7 @@ void continuous::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::instance>();
 		
 		// Register components
-		expression::register_syntax(tokens);
+		lvalue::register_syntax(tokens);
 		assignment_statement::register_syntax(tokens);
 	}
 }

@@ -8,7 +8,16 @@ namespace parse_verilog {
 
 parse_expression::config makeExprConfig();
 
-struct tag;
-using expression=parse_expression::wrapper<tag>;
+struct config {
+	static std::shared_ptr<parse_expression::config> cfg;
+	
+	string debug_name;
+
+	config();
+	~config();
+};
+
+using rvalue = parse_expression::rvalue<config>;
+using lvalue = parse_expression::lvalue<config>;
 
 }

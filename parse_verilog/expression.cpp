@@ -6,6 +6,16 @@
 
 namespace parse_verilog {
 
+std::shared_ptr<parse_expression::config> config::cfg = 
+	std::make_shared<parse_expression::config>(parse_verilog::makeExprConfig());
+
+config::config() {
+	debug_name = "verilog";
+}
+
+config::~config() {
+}
+
 parse_expression::config makeExprConfig() {
 	parse_expression::config cfg;
 	int CONSTANT = cfg.push<parse::wrapper<number> >();
@@ -95,9 +105,5 @@ parse_expression::config makeExprConfig() {
 
 	return cfg;
 }
-
-template <>
-std::shared_ptr<parse_expression::config> expression::cfg = 
-	std::make_shared<parse_expression::config>(parse_verilog::makeExprConfig());
 
 }

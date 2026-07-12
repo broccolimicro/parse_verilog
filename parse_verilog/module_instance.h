@@ -15,7 +15,7 @@ struct port_connection {
 	~port_connection();
 	
 	string port_name;  // Empty for positional connection
-	expression expr;
+	rvalue expr;
 	
 	string to_string(string tab = "") const;
 };

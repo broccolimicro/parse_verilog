@@ -18,7 +18,7 @@ struct if_statement : parse::syntax {
 	if_statement(tokenizer &tokens, std::any data=std::any());
 	~if_statement();
 
-	vector<expression> condition;
+	vector<rvalue> condition;
 	vector<block_statement> body;
 
 	void parse(tokenizer &tokens, std::any data=std::any());

@@ -23,7 +23,7 @@ void assignment_statement::parse(tokenizer &tokens, std::any data) {
 
 	// Parse right-hand side expression
 	tokens.increment(true);
-	expression::expect(tokens);
+	tokens.expect<rvalue>();
 
 	// Parse equals sign
 	tokens.increment(true);
@@ -32,10 +32,10 @@ void assignment_statement::parse(tokenizer &tokens, std::any data) {
 
 	// Parse left-hand side (target)
 	tokens.increment(true);
-	expression::expectl(tokens);
+	tokens.expect<lvalue>();
 
 	if (tokens.decrement(__FILE__, __LINE__)) {
-		lvalue.parsel(tokens);
+		left.parse(tokens);
 	}
 
 	if (tokens.decrement(__FILE__, __LINE__)) {
@@ -62,7 +62,7 @@ bool assignment_statement::is_next(tokenizer &tokens, int i, std::any data) {
 		and not tokens.is_next("for", i)
 		and not tokens.is_next("module", i)
 		and not tokens.is_next("endmodule", i)
-		and expression::is_nextl(tokens, i);
+		and lvalue::is_next(tokens, i);
 	//return tokens.is_next("<=", i+1) or tokens.is_next("=", i+1);
 }
 
@@ -73,7 +73,8 @@ void assignment_statement::register_syntax(tokenizer &tokens) {
 		tokens.register_token<parse::instance>();
 		
 		// Register components
-		expression::register_syntax(tokens);
+		lvalue::register_syntax(tokens);
+		rvalue::register_syntax(tokens);
 	}
 }
 
@@ -82,7 +83,7 @@ string assignment_statement::to_string(string tab) const {
 		return "";
 	}
 	
-	return lvalue.to_string(tab) + (blocking ? " = " : " <= ")  + expr.to_string(tab);
+	return left.to_string(tab) + (blocking ? " = " : " <= ")  + expr.to_string(tab);
 }
 
 parse::syntax *assignment_statement::clone() const {

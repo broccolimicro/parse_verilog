@@ -69,7 +69,7 @@ void declaration::parse(tokenizer &tokens, std::any data) {
 
 		// Parse LSB expression
 		tokens.increment(true);
-		expression::expect(tokens);
+		tokens.expect<rvalue>();
 
 		// Expect colon
 		tokens.increment(true);
@@ -77,7 +77,7 @@ void declaration::parse(tokenizer &tokens, std::any data) {
 
 		// Parse MSB expression
 		tokens.increment(true);
-		expression::expect(tokens);
+		tokens.expect<rvalue>();
 
 		if (tokens.decrement(__FILE__, __LINE__)) {
 			msb.parse(tokens);
@@ -114,7 +114,7 @@ void declaration::parse(tokenizer &tokens, std::any data) {
 
 		// Parse LSB expression
 		tokens.increment(true);
-		expression::expect(tokens);
+		tokens.expect<rvalue>();
 
 		// Expect colon
 		tokens.increment(true);
@@ -122,9 +122,9 @@ void declaration::parse(tokenizer &tokens, std::any data) {
 
 		// Parse MSB expression
 		tokens.increment(true);
-		expression::expect(tokens);
+		tokens.expect<rvalue>();
 
-		size.push_back(array<expression, 2>());
+		size.push_back(array<rvalue, 2>());
 
 		if (tokens.decrement(__FILE__, __LINE__)) {
 			size.back()[0].parse(tokens);
@@ -160,7 +160,7 @@ void declaration::register_syntax(tokenizer &tokens) {
 		tokens.register_syntax<declaration>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();
-		expression::register_syntax(tokens);
+		rvalue::register_syntax(tokens);
 	}
 }
 

@@ -47,7 +47,7 @@ void trigger::parse(tokenizer &tokens, std::any data) {
 		tokens.expect(")");
 
 		tokens.increment(true);
-		expression::expect(tokens);
+		tokens.expect<rvalue>();
 		tokens.expect("*");
 
 		// Expect opening parenthesis
@@ -96,7 +96,7 @@ void trigger::register_syntax(tokenizer &tokens) {
 		tokens.register_syntax<trigger>();
 		tokens.register_token<parse::symbol>();
 		tokens.register_token<parse::instance>();
-		expression::register_syntax(tokens);
+		rvalue::register_syntax(tokens);
 		assignment_statement::register_syntax(tokens);
 		if_statement::register_syntax(tokens);
 		loop_statement::register_syntax(tokens);

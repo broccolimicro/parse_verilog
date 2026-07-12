@@ -17,7 +17,7 @@ struct loop_statement : parse::syntax {
     ~loop_statement();
 
 		assignment_statement init;
-		expression cond;
+		rvalue cond;
 		assignment_statement step;
     block_statement body;
 

@@ -53,7 +53,7 @@ void if_statement::parse(tokenizer &tokens, std::any data) {
 
 			// Parse condition
 			tokens.increment(true);
-			expression::expect(tokens);
+			tokens.expect<rvalue>();
 
 			// Expect opening parenthesis
 			tokens.increment(true);
@@ -64,8 +64,7 @@ void if_statement::parse(tokenizer &tokens, std::any data) {
 			}
 			
 			if (tokens.decrement(__FILE__, __LINE__)) {
-				condition.push_back(expression());
-				condition.back().parse(tokens);
+				condition.push_back(rvalue(tokens));
 			}
 			
 			if (tokens.decrement(__FILE__, __LINE__)) {

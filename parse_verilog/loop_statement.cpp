@@ -41,7 +41,7 @@ void loop_statement::parse(tokenizer &tokens, std::any data) {
 	
 	// Parse condition
 	tokens.increment(false);
-	expression::expect(tokens);
+	tokens.expect<rvalue>();
 	
 	// Parse first semicolon
 	tokens.increment(true);
@@ -113,7 +113,7 @@ void loop_statement::register_syntax(tokenizer &tokens) {
 		
 		// Register components
 		assignment_statement::register_syntax(tokens);
-		expression::register_syntax(tokens);
+		rvalue::register_syntax(tokens);
 		block_statement::register_syntax(tokens);
 	}
 }

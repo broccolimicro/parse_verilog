@@ -17,7 +17,7 @@ struct trigger : parse::syntax {
     trigger(tokenizer &tokens, std::any data=std::any());
     ~trigger();
 
-    expression condition;
+    rvalue condition;
     block_statement body;
 
     void parse(tokenizer &tokens, std::any data=std::any());

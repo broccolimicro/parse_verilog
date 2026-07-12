@@ -19,12 +19,12 @@ struct declaration : parse::syntax {
 
 	string type;
 
-	expression msb;
-	expression lsb;
+	rvalue msb;
+	rvalue lsb;
 
 	string name;
 	
-	vector<array<expression, 2> > size;
+	vector<array<rvalue, 2> > size;
 
 	void parse(tokenizer &tokens, std::any data=std::any());
 	static bool is_next(tokenizer &tokens, int i = 1, std::any data=std::any());

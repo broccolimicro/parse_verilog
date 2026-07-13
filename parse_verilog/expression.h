@@ -3,6 +3,7 @@
 #include <parse_verilog/number.h>
 #include <parse_expression/expression.h>
 #include <parse_expression/assignment.h>
+#include <parse_expression/wrapper.h>
 
 namespace parse_verilog {
 

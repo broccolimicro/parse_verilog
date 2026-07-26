@@ -18,8 +18,8 @@ config::~config() {
 
 parse_expression::config makeExprConfig() {
 	parse_expression::config cfg;
-	int CONSTANT = cfg.push<parse::wrapper<number> >();
-	int LITERAL = cfg.push<parse::wrapper<parse::instance> >();
+	int CONSTANT = cfg.push<parse::wrapper<number> >("constant");
+	int LITERAL = cfg.push<parse::wrapper<parse::instance> >("literal");
 
 	cfg.base = {LITERAL, CONSTANT};
 
@@ -28,6 +28,9 @@ parse_expression::config makeExprConfig() {
 	cfg.order.push(operation_set::BINARY);
 	cfg.order.push_back("", "", "or", "");
 	cfg.order.push_back("", "", ",", "");
+
+	cfg.order.push(operation_set::TERNARY);
+	cfg.order.push_back("", "?", ":", "");
 
 	cfg.order.push(operation_set::UNARY);
 	cfg.order.push_back("posedge", "", "", "");
@@ -97,9 +100,10 @@ parse_expression::config makeExprConfig() {
 	cfg.order.push_back("$", "(", ",", ")");
 	cfg.order.push_back("", ".", "", "");
 	cfg.order.push_back("", "[", ":", "]");
+	cfg.order.push_back("", "'(", "", ")");
 	
-	cfg.order.push(operation_set::MODIFIER);
-	cfg.order.push_back("", "::", "", "");
+	cfg.order.push(operation_set::GROUP);
+	cfg.order.push_back("'{", "", "", "}");
 	
 	cfg.lvalueLevel = cfg.order.size()-2;
 

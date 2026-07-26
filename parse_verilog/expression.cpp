@@ -96,6 +96,8 @@ parse_expression::config makeExprConfig() {
 	cfg.order.push_back("~^", "", "", "");
 	cfg.order.push_back("^~", "", "", "");
 
+	cfg.set_lvalue();
+
 	cfg.order.push(operation_set::MODIFIER);
 	cfg.order.push_back("$", "(", ",", ")");
 	cfg.order.push_back("", ".", "", "");
@@ -104,8 +106,6 @@ parse_expression::config makeExprConfig() {
 	
 	cfg.order.push(operation_set::GROUP);
 	cfg.order.push_back("'{", "", "", "}");
-	
-	cfg.lvalueLevel = cfg.order.size()-2;
 
 	return cfg;
 }

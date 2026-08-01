@@ -4,6 +4,8 @@
 #include <parse_expression/expression.h>
 #include <parse_expression/assignment.h>
 #include <parse_expression/wrapper.h>
+#include <parse/wrapper.h>
+#include "number.h"
 
 namespace parse_verilog {
 
@@ -17,6 +19,10 @@ struct config {
 	config();
 	~config();
 };
+
+using constant = parse::wrapper<number>;
+using literal = parse::wrapper<parse::instance>;
+using type_name = parse::wrapper<parse::instance>;
 
 using rvalue = parse_expression::rvalue<config>;
 using lvalue = parse_expression::lvalue<config>;

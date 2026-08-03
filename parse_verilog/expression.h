@@ -22,7 +22,7 @@ struct config {
 
 using constant = parse::wrapper<number>;
 using literal = parse::wrapper<parse::instance>;
-using type_name = parse::wrapper<parse::instance>;
+using label = parse::wrapper<parse::instance>;
 
 using rvalue = parse_expression::rvalue<config>;
 using lvalue = parse_expression::lvalue<config>;

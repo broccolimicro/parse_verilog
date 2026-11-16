@@ -4,7 +4,7 @@ A parser for a subset of the Verilog hardware description language.
 
 ## Overview
 
-The `parse_verilog` library provides a recursive-descent parser for a simplified subset of the Verilog hardware description language. It's designed to work with the broader parsing infrastructure used in the broccoli/loom toolchain. The parser converts Verilog text into an Abstract Syntax Tree (AST) representation that can be traversed, analyzed, or transformed.
+The `parse_verilog` library provides a recursive-descent parser for a simplified subset of the Verilog hardware description language. It's designed to work with the broader parsing infrastructure used in the broccoli/bok toolchain. The parser converts Verilog text into an Abstract Syntax Tree (AST) representation that can be traversed, analyzed, or transformed.
 
 ## Library Structure
 
@@ -184,4 +184,20 @@ make coverage
 
 ## License
 
-This code is licensed under the GNU General Public License v3.0.
+Licensed by Broccoli, LLC under GNU GPL v3.
+
+Written by Ned Bingham.
+Copyright © 2024 Broccoli, LLC.
+
+Bok is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Bok is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+A copy of the GNU General Public License may be found in COPYRIGHT.
+Otherwise, see <https://www.gnu.org/licenses/>.

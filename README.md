@@ -179,7 +179,7 @@ make coverage
 
 - parse: Core parsing infrastructure
 - parse_expression: Expression parsing
-- parse_ucs: Unicode support
+- parse_choy: Unicode support
 - common: Common utilities
 
 ## License
